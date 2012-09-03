@@ -9,6 +9,8 @@ void LongInt::setZero_() {
 // add param, both positive
 LongInt LongInt::add(LongInt& param) {
 	LongInt result;
+	result.nSign = 1;
+
 	int incr = 0;
 	int size = 0;
 	int a = (int) num.size();
@@ -61,6 +63,8 @@ LongInt LongInt::add(LongInt& param) {
 // subtract param, both positive, assume abs(this) > abs(param)
 LongInt LongInt::subtract(LongInt& param) {
 	LongInt result;
+	result.nSign = 1;
+
 	int decr = 0;
 	int a = (int) num.size();
 	int b = (int) param.num.size();
@@ -89,6 +93,53 @@ LongInt LongInt::subtract(LongInt& param) {
 		result.num[b] -= decr;
 	}
 
+	// remove leading 0s
+	int c = result.num.size();
+	for (int i = c - 1; i >= 0; i--) {
+		if (result.num[i] == 0)
+			result.num.pop_back();
+		else
+			break;
+	}
+			
+	return result;
+}
+
+// multiply by 0 < i < DIVIDER, both positive
+LongInt LongInt::multiply(int param, int n) {
+	int size = (int) num.size();
+	if (size == 0)
+		return 0;
+	if (size == 1)
+		return num[0] * param;
+
+	LongInt result;
+	LongInt a;
+	LongInt b;
+	result.nSign = 1;
+	a.nSign = 1;
+	b.nSign = 1;
+
+	for (int m = 0; m < n; m++) {
+		b.num.push_back(0);
+	}
+	for (int i = 0; i < size; i += 2) {
+		int prod = num[i] * param;
+		a.num.push_back(prod % DIVIDER);
+		a.num.push_back(prod / DIVIDER);
+	}
+
+	for (int m = 0; m < n + 1; m++) {
+		b.num.push_back(0);
+	}
+	for (int j = 1; j < size; j += 2) {
+		int prod = num[j] * param;
+		b.num.push_back(prod % DIVIDER);
+		b.num.push_back(prod / DIVIDER);
+	}
+
+	result = a.add(b);
+	
 	return result;
 }
 
@@ -113,7 +164,8 @@ int LongInt::absCompare(LongInt& param) {
 }
 
 LongInt::LongInt() {
-	LongInt(0);
+	num.clear();
+	nSign = 0;
 }
 
 LongInt::LongInt(LongInt& param) {
@@ -139,10 +191,30 @@ LongInt::LongInt(int i) {
 }
 
 void LongInt::dump() {
-	//TODO
+	int nonZeroNum = 0;
 	printf("start\n");
+	if (sign() == 0) {
+		printf("0");
+		return;
+	}
+	if (sign() == -1)
+		printf("-");
 	for (int i = (int) num.size() - 1; i >= 0; i--) {
-		printf("%i\t", num[i]);
+		if (!(num[i] == 0 && nonZeroNum == 0))
+			nonZeroNum++;
+		if (nonZeroNum == 1) {
+			printf("%i", num[i]);
+		} else if (nonZeroNum > 1) {
+			if (num[i] < 10)
+				printf("000%i", num[i]);
+			else if (num[i] < 100)
+				printf("00%i", num[i]);
+			else if (num[i] < 1000)
+				printf("0%i", num[i]);
+			else if (num[i] < 10000)
+				printf("%i", num[i]);
+		}
+			
 	}
 	printf("end\n");
 }
@@ -217,8 +289,21 @@ LongInt LongInt::operator-(LongInt& param) {
 }
 
 LongInt LongInt::operator*(LongInt& param) {
-	//TODO
-	return *this;
+	LongInt result;
+	result.setZero_();
+
+	if (eqZero() || param.eqZero())		
+		return result;
+
+	result.nSign = sign() * param.sign();
+	int a = (int) num.size();
+	int b = (int) param.num.size();
+
+	for (int i = 0; i < b; i++) {
+		result = result.add(multiply(param.num[i], i));
+	}
+
+	return result;
 }
 
 bool LongInt::operator>(LongInt& param) {
