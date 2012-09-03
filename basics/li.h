@@ -1,7 +1,14 @@
 #ifndef LIH
 #define LIH
 
+#include <vector>
+using namespace std;
+
 class LongInt {
+
+	private:
+		vector<int> num; // int should be 4 digits
+		const static int DIVIDER = 10000; // for vector operation
 
 	protected:
 		void setZero_(); // set this number to be zero
