@@ -7,11 +7,15 @@ using namespace std;
 class LongInt {
 
 	private:
+		int nSign; // 1 or -1 or 0
 		vector<int> num; // int should be 4 digits
 		const static int DIVIDER = 10000; // for vector operation
 
 	protected:
 		void setZero_(); // set this number to be zero
+		LongInt add(LongInt&);
+		LongInt subtract(LongInt&);
+		int absCompare(LongInt&); // check abs values, 1 if greater, 0 if equal, -1 if less
 
 	public:
 		LongInt();
