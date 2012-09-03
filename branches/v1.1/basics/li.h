@@ -15,6 +15,7 @@ class LongInt {
 		void setZero_(); // set this number to be zero
 		LongInt add(LongInt&);
 		LongInt subtract(LongInt&);
+		LongInt multiply(int, int); // mutiply by int with at most 4 digits, at int position
 		int absCompare(LongInt&); // check abs values, 1 if greater, 0 if equal, -1 if less
 
 	public:
