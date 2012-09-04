@@ -100,8 +100,16 @@ LongInt LongInt::subtract(LongInt& param) {
 	return result;
 }
 
-// multiply by 0 < param < DIVIDER, both positive
+/***********************************************************************
+	mutiply by param which is at [n] position, where 0 < param < DIVIDER
+	only consider positive number multiplication
+	the whole idea is 
+	aaaabbbbccccdddd * eeee		// result
+	= bbbb0000dddd * eeee		// a
+	+ aaaa0000cccc0000 * eeee	// b
+************************************************************************/
 LongInt LongInt::multiply(int param, int n) {
+	// multiply by 0
 	int size = (int) num.size();
 	if (size == 0)
 		return 0;
@@ -142,6 +150,7 @@ LongInt LongInt::multiply(int param, int n) {
 	return result;
 }
 
+// check abs values, 1 if greater, 0 if equal, -1 if less
 int LongInt::absCompare(LongInt& param) {
 	int a = (int) num.size();
 	int b = (int) param.num.size();
@@ -162,6 +171,7 @@ int LongInt::absCompare(LongInt& param) {
 	}
 }
 
+// remove the leading zeros
 void LongInt::removeLeadingZeros() {
 
 	int size = num.size();
@@ -183,6 +193,13 @@ LongInt::LongInt(LongInt& param) {
 	nSign = param.nSign;
 }
 
+/*****************************************************
+	int, e.g. 1234567890 is stored in num as follows:
+	num[0] = 7890;
+	num[1] = 3456;
+	num[2] = 12;
+	nSign = 1;
+*****************************************************/
 LongInt::LongInt(int i) {
 	num.clear();
 
@@ -205,6 +222,7 @@ LongInt::LongInt(string numStr) {
 	if (numStr.empty()) {
 		nSign = 0;
 	} else {
+		// delete minus sign
 		if (numStr[0] == '-') {
 			nSign = -1;
 			numStr.erase(0, 1);
@@ -212,6 +230,7 @@ LongInt::LongInt(string numStr) {
 			nSign = 1;
 		}
 
+		// all chars except the first few
 		int size = (int) numStr.size();
 		for (int i = size - NDIGIT; i >= 0; i -= NDIGIT) {
 			string subStr = numStr.substr(i, NDIGIT);
@@ -253,7 +272,7 @@ LongInt LongInt::operator+(LongInt& param) {
 		result = add(param);
 		result.nSign = sign();
 	} else {
-		
+		// different sign, subtract
 		int temp = absCompare(param);
 		if (temp == 0) {
 			result.setZero_();
@@ -278,7 +297,7 @@ LongInt LongInt::operator-(LongInt& param) {
 	} else if (param.eqZero()) {
 		result = *this;
 	} else if (sign() == param.sign()) {
-
+		// same sign, subtract
 		int temp = absCompare(param);
 		if (temp == 0) {
 			result.setZero_();
@@ -403,9 +422,11 @@ string LongInt::toString() {
 		result = s + result;
 	}
 
+	// first few chars
 	string first = _itoa(num[size - 1], buffer, 10);
 	result = first + result;
 	
+	// minus sign
 	if (sign() == -1) {
 		string minus = "-";
 		result = minus + result;
