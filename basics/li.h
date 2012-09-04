@@ -9,6 +9,7 @@ class LongInt {
 	private:
 		int nSign; // 1 or -1 or 0
 		vector<int> num; // int should be 4 digits
+		const static int NDIGIT = 4;
 		const static int DIVIDER = 10000; // for vector operation
 
 	protected:
@@ -22,6 +23,7 @@ class LongInt {
 		LongInt();
 		LongInt(LongInt&); // copy constructor
 		LongInt(int);      // take in an integer 
+		LongInt(string);
 		void dump();       // print out this number
 
 		LongInt& operator=(int); 
