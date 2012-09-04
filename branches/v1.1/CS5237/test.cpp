@@ -32,6 +32,7 @@ void processFile(char* ifilename, char* ofilename){
 	string command;// the command of each line
 	string numberStr; // for single LongInt operation
 	string outputAns = "Answer of your computation"; // the answer you computed
+	LongInt output;
 
 	ifstream inputFile(ifilename,ios::in);
 	ofstream outputFile(ofilename,ios::out);
@@ -40,7 +41,12 @@ void processFile(char* ifilename, char* ofilename){
 		cerr << "Error: Cannot read input file \"" << ifilename << "\"";
 		exit(1);
 	}
-
+	/*
+	LongInt a(1);
+	LongInt b("1234567890");
+	LongInt c = a * b;
+	c.dump();
+	*/
 	while(inputFile.good()){
 
 		getline(inputFile,line);
@@ -57,6 +63,10 @@ void processFile(char* ifilename, char* ofilename){
 		if(!command.compare("LX")){
 			linestream >> numberStr;
 
+			LongInt num(numberStr);
+			output = num;
+			outputAns = output.toString();
+
 			globalSW.pause();
 			outputFile << line_noStr  << " " << outputAns << endl;
 			globalSW.resume();
@@ -64,12 +74,20 @@ void processFile(char* ifilename, char* ofilename){
 		else if(!command.compare("AD")){
 			linestream >> numberStr;
 
+			LongInt num(numberStr);
+			output = output + num;
+			outputAns = output.toString();
+			
 			globalSW.pause();
 			outputFile << line_noStr  << " " << outputAns << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("SB")){
 			linestream >> numberStr;
+			
+			LongInt num(numberStr);
+			output = output - num;
+			outputAns = output.toString();
 
 			globalSW.pause();
 			outputFile << line_noStr  << " " << outputAns << endl;
@@ -77,6 +95,10 @@ void processFile(char* ifilename, char* ofilename){
 		}
 		else if(!command.compare("MU")){
 			linestream >> numberStr;
+			
+			LongInt num(numberStr);
+			output = output * num;
+			outputAns = output.toString();
 
 			globalSW.pause();
 			outputFile << line_noStr  << " " << outputAns << endl;
@@ -84,6 +106,9 @@ void processFile(char* ifilename, char* ofilename){
 		}
 		else if(!command.compare("NG")){
 			linestream >> numberStr;
+			
+			output = -output;
+			outputAns = output.toString();
 
 			globalSW.pause();
 			outputFile << line_noStr  << " " << outputAns << endl;
@@ -137,14 +162,14 @@ void processFile(char* ifilename, char* ofilename){
 			cerr << "Exception: Wrong input command" << endl;
 		}
 	}
-
+	
 }
 
 void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input500.txt", "output.txt");
+	processFile("input100.txt", "output.txt");
 	globalSW.pause();
 }
 
