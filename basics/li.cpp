@@ -1,4 +1,6 @@
 #include "li.h"
+#include <iostream>
+
 
 void LongInt::setZero_() {
 	num.clear();
@@ -93,15 +95,8 @@ LongInt LongInt::subtract(LongInt& param) {
 		result.num[b] -= decr;
 	}
 
-	// remove leading 0s
-	int c = result.num.size();
-	for (int i = c - 1; i >= 0; i--) {
-		if (result.num[i] == 0)
-			result.num.pop_back();
-		else
-			break;
-	}
-			
+	result.removeLeadingZeros();
+				
 	return result;
 }
 
@@ -110,15 +105,11 @@ LongInt LongInt::multiply(int param, int n) {
 	int size = (int) num.size();
 	if (size == 0)
 		return 0;
-	if (size == 1)
-		return num[0] * param;
 
 	LongInt result;
-	LongInt a;
-	LongInt b;
+	LongInt a;	
 	result.nSign = 1;
 	a.nSign = 1;
-	b.nSign = 1;
 
 	for (int m = 0; m < n; m++) {
 		a.num.push_back(0);
@@ -128,7 +119,14 @@ LongInt LongInt::multiply(int param, int n) {
 		a.num.push_back(prod % DIVIDER);
 		a.num.push_back(prod / DIVIDER);
 	}
+	if (size == 1) {
+		result = a;
+		result.removeLeadingZeros();
+		return result;
+	}
 
+	LongInt b;
+	b.nSign = 1;
 	for (int m = 0; m < n + 1; m++) {
 		b.num.push_back(0);
 	}
@@ -139,6 +137,7 @@ LongInt LongInt::multiply(int param, int n) {
 	}
 
 	result = a.add(b);
+	result.removeLeadingZeros();
 	
 	return result;
 }
@@ -160,6 +159,17 @@ int LongInt::absCompare(LongInt& param) {
 			}
 		}
 		return 0; // equal
+	}
+}
+
+void LongInt::removeLeadingZeros() {
+
+	int size = num.size();
+	for (int i = size - 1; i >= 0; i--) {
+		if (num[i] == 0)
+			num.pop_back();
+		else
+			break;
 	}
 }
 
@@ -216,33 +226,7 @@ LongInt::LongInt(string numStr) {
 }
 
 void LongInt::dump() {
-	int nonZeroNum = 0;
-	printf("start\n");
-	if (sign() == 0) {
-		printf("0");
-		printf("\nend\n");
-		return;
-	}
-	if (sign() == -1)
-		printf("-");
-	for (int i = (int) num.size() - 1; i >= 0; i--) {
-		if (!(num[i] == 0 && nonZeroNum == 0))
-			nonZeroNum++;
-		if (nonZeroNum == 1) {
-			printf("%i", num[i]);
-		} else if (nonZeroNum > 1) {
-			if (num[i] < 10)
-				printf("000%i", num[i]);
-			else if (num[i] < 100)
-				printf("00%i", num[i]);
-			else if (num[i] < 1000)
-				printf("0%i", num[i]);
-			else if (num[i] < 10000)
-				printf("%i", num[i]);
-		}
-			
-	}
-	printf("\nend\n");
+	cout << toString() << endl;
 }
 
 LongInt& LongInt::operator=(int i) {
@@ -401,4 +385,35 @@ int LongInt::sign() {
 double LongInt::doubleValue() {
 	//TODO
 	return 0.0;
+}
+
+string LongInt::toString() {
+	string zero = "0";
+	if (sign() == 0) {
+		return zero;
+	}
+
+	string result;
+	char buffer[100];
+	int size = (int) num.size();
+	for (int i = 0; i < size - 1; i++) {
+		string s = _itoa(num[i], buffer, 10);
+		while (s.size() < NDIGIT)
+			s = zero + s;
+		result = s + result;
+	}
+
+	string first = _itoa(num[size - 1], buffer, 10);
+	result = first + result;
+	
+	if (sign() == -1) {
+		string minus = "-";
+		result = minus + result;
+	}
+	return result;
+}
+
+LongInt operator-(LongInt& param) {
+	param.nSign = 0 - param.nSign;
+	return param;
 }
