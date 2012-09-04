@@ -1,47 +1,62 @@
 #ifndef LIH
 #define LIH
-
-#include <vector>
-using namespace std;
+#include <string>
+#include<vector>
 
 class LongInt {
+public:
+	LongInt();
+	LongInt(const LongInt&); // copy constructor
 
-	private:
-		vector<int> num; // int should be 4 digits
-		const static int DIVIDER = 10000; // for vector operation
+	LongInt(const int&);      // take in an integer
+	void dump();       // print out this number
 
-	protected:
-		void setZero_(); // set this number to be zero
+	LongInt& operator=(const int&);
+	LongInt& operator=(const std::string&);
+	LongInt& operator=(const LongInt&);
+	LongInt operator+(const LongInt&);
+	LongInt operator+(const std::string&);
+	LongInt operator+(const int& i);
 
-	public:
-		LongInt();
-		LongInt(LongInt&); // copy constructor
-		LongInt(int);      // take in an integer 
-		void dump();       // print out this number
+	LongInt operator*(const std::string s);
+	LongInt operator*(const LongInt&);
+	LongInt operator*(const int& i);
 
-		LongInt& operator=(int); 
-		LongInt& operator=(LongInt&);  
-		LongInt operator+(LongInt&); 
-		LongInt operator+(int i) {return (*this) + LongInt(i);};
-		LongInt operator-(LongInt&);
-		LongInt operator-(int i) {return (*this) + LongInt(i);};
-		LongInt operator*(LongInt&);
-		LongInt operator*(int i) {return (*this) * LongInt(i);};
-		
-		bool operator>(LongInt&);
-		bool operator<(LongInt&);
-		bool operator==(LongInt&);
+	LongInt operator-(const LongInt&);
+	LongInt operator-(const std::string str);
+	LongInt operator-(const int& i);
+	LongInt operator-();
 
-		bool eqZero();  // return true if it is zero
-		int sign();     // return +1 if it's positive, -1 if it's negative, 0 if it's zero
+	bool operator>(const LongInt&);
+	bool operator<(const LongInt&);
+	bool operator==(const LongInt&);
 
+	bool eqZero();  // return true if it is zero
+	int sign();     // return +1 if it's positive, -1 if it's negative, 0 if it's zero
+	bool isNegative(std::string s);
 
-		double doubleValue(); // return a double approximation (you can assume that it will not be out of bound)
+	double doubleValue(); // return a double approximation (you can assume that it will not be out of bound)
+	const std::string toString() const;
+	//void setValue( std::vector<unsigned int> data ); 
+	//friend LongInt operator-(LongInt);
 
-	friend LongInt operator-(LongInt&); 
+protected:
+	void setZero_(); // set this number to be zero
+	void addValue(std::vector<unsigned int> vec);
+	std::vector<unsigned int> string2Vec(std::string s, bool& negative);
+	int compare(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
+	std::vector<unsigned int> substractValue(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
+
+private:
+	int m_SzOfInt;
+	std::vector<unsigned int> m_data;
+	bool bSign;// indicate negative value
+
 };
 
-LongInt operator-(LongInt&); // negative sign
-
-
+//LongInt operator-(LongInt rhs){ // negative sign
+//	rhs.bSign = !rhs.bSign;
+//	return rhs;
+//}
 #endif
+

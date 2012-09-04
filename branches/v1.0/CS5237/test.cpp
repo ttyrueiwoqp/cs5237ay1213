@@ -26,8 +26,9 @@ static string groupName = "(Your one-line group name here)";
 
 void processFile(char* ifilename, char* ofilename){
 
-	string line_noStr;
+	LongInt li;
 
+	string line_noStr;
 	string line;   // each line of the file
 	string command;// the command of each line
 	string numberStr; // for single LongInt operation
@@ -56,37 +57,41 @@ void processFile(char* ifilename, char* ofilename){
 
 		if(!command.compare("LX")){
 			linestream >> numberStr;
+			//Perform the load operation here
+			li = numberStr;
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("AD")){
 			linestream >> numberStr;
-
+			//Perform addition
+			li = li + numberStr;
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("SB")){
 			linestream >> numberStr;
-
+			//Perform substraction here
+			li = li - numberStr;
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("MU")){
 			linestream >> numberStr;
-
+			li = li * numberStr;
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("NG")){
-			linestream >> numberStr;
-
+			//linestream >> numberStr;
+			li = -li;
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("SD")){
@@ -97,14 +102,14 @@ void processFile(char* ifilename, char* ofilename){
 			getline(inputFile,line);
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("AP")){
 			linestream >> numberStr;
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IT")){
@@ -117,7 +122,7 @@ void processFile(char* ifilename, char* ofilename){
 			linestream >> numberStr;
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IC")){
@@ -130,7 +135,7 @@ void processFile(char* ifilename, char* ofilename){
 			linestream >> numberStr;
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else{
@@ -144,7 +149,7 @@ void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input500.txt", "output.txt");
+	processFile("input6.txt", "output.txt");
 	globalSW.pause();
 }
 
