@@ -203,12 +203,14 @@ LongInt::LongInt(LongInt& param) {
 LongInt::LongInt(int i) {
 	num.clear();
 
-	if (i > 0)
+	if (i > 0) {
 		nSign = 1;
-	else if (i < 0)
+	} else if (i < 0) {
 		nSign = -1;
-	else
+		i = 0 - i;
+	} else {
 		nSign = 0;
+	}
 
 	while (i >= DIVIDER) {
 		num.push_back(i % DIVIDER);
