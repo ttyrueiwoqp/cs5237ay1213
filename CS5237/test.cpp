@@ -27,6 +27,7 @@ static string groupName = "(Your one-line group name here)";
 void processFile(char* ifilename, char* ofilename){
 
 	LongInt li;
+	PointSet pointSet; // The points added by the user
 
 	string line_noStr;
 	string line;   // each line of the file
@@ -107,20 +108,31 @@ void processFile(char* ifilename, char* ofilename){
 		}
 		else if(!command.compare("AP")){
 			linestream >> numberStr;
+			LongInt x, y;
+			x = numberStr;
+			linestream >> numberStr;
+			y = numberStr;
+
+			li = pointSet.addPoint(x, y);			
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << li.toString() << endl;
+			outputFile << line_noStr  << " #POINT = " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IT")){
+			int p1, p2, p3, p;
 			linestream >> numberStr;
 
+			// Read the point indices one by one
+			p1 = atoi(numberStr.c_str()); // converts string to integer
 			linestream >> numberStr;
-
+			p2 = atoi(numberStr.c_str());
 			linestream >> numberStr;
-
+			p3 = atoi(numberStr.c_str());
 			linestream >> numberStr;
+			p = atoi(numberStr.c_str());
 
+			li = pointSet.inTri(p1, p2, p3, p);
 			globalSW.pause();
 			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
@@ -149,7 +161,7 @@ void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input6.txt", "output.txt");
+	processFile("input.txt", "output.txt");
 	globalSW.pause();
 }
 
