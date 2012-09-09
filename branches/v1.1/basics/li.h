@@ -18,12 +18,12 @@ class LongInt {
 		LongInt add(LongInt&);	// add param, both positive
 		LongInt subtract(LongInt&);	// subtract param, both positive, assume abs(this) > abs(param)
 		LongInt multiply(int, int); // mutiply by int which is at [int] position
-		int absCompare(LongInt&); // check abs values, 1 if greater, 0 if equal, -1 if less
+		int absCompare(const LongInt&); // check abs values, 1 if greater, 0 if equal, -1 if less
 		void removeLeadingZeros(); // remove the leading zeros
 
 	public:
 		LongInt();
-		LongInt(LongInt&); // copy constructor
+		LongInt(const LongInt&); // copy constructor
 		LongInt(int);      // take in an integer 
 		LongInt(string);   // take in an integer string
 		void dump();       // print out this number
@@ -37,9 +37,9 @@ class LongInt {
 		LongInt operator*(LongInt&);
 		LongInt operator*(int i) {return (*this) * LongInt(i);};
 		
-		bool operator>(LongInt&);
-		bool operator<(LongInt&);
-		bool operator==(LongInt&);
+		bool operator>(const LongInt&);
+		bool operator<(const LongInt&);
+		bool operator==(const LongInt&);
 
 		bool eqZero();  // return true if it is zero
 		int sign();     // return +1 if it's positive, -1 if it's negative, 0 if it's zero

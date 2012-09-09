@@ -151,7 +151,7 @@ LongInt LongInt::multiply(int param, int n) {
 }
 
 // check abs values, 1 if greater, 0 if equal, -1 if less
-int LongInt::absCompare(LongInt& param) {
+int LongInt::absCompare(const LongInt& param) {
 	int a = (int) num.size();
 	int b = (int) param.num.size();
 
@@ -188,7 +188,7 @@ LongInt::LongInt() {
 	nSign = 0;
 }
 
-LongInt::LongInt(LongInt& param) {
+LongInt::LongInt(const LongInt& param) {
 	num = param.num;
 	nSign = param.nSign;
 }
@@ -337,10 +337,10 @@ LongInt LongInt::operator*(LongInt& param) {
 	return result;
 }
 
-bool LongInt::operator>(LongInt& param) {
-	if (sign() > param.sign())
+bool LongInt::operator>(const LongInt& param) {
+	if (sign() > param.nSign)
 		return true;
-	else if (sign() < param.sign())
+	else if (sign() < param.nSign)
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -352,10 +352,10 @@ bool LongInt::operator>(LongInt& param) {
 	return (sign() == result) ? true : false;
 }
 
-bool LongInt::operator<(LongInt& param) {
-	if (sign() < param.sign())
+bool LongInt::operator<(const LongInt& param) {
+	if (sign() < param.nSign)
 		return true;
-	else if (sign() > param.sign())
+	else if (sign() > param.nSign)
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -367,8 +367,8 @@ bool LongInt::operator<(LongInt& param) {
 	return (sign() == 0 - result) ? true : false;
 }
 
-bool LongInt::operator==(LongInt& param) {
-	if (sign() != param.sign())
+bool LongInt::operator==(const LongInt& param) {
+	if (sign() != param.nSign)
 		return false;
 
 	int a = (int) num.size();
