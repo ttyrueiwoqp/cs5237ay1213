@@ -41,7 +41,7 @@ int PointSet::inTri(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 	b2 = triangleSign(pIdx, p2Idx, p3Idx);
 	b3 = triangleSign(pIdx, p3Idx, p1Idx);
 
-	if (b1 == 0 || b2 == 0 || b3 == 0) // degeneracy
+	if (b1.eqZero() || b2.eqZero() || b3.eqZero()) // degeneracy
 		return 0;
 	return (((b1 < 0) == (b2 < 0)) && ((b2 < 0) == (b3 < 0))) ? 1 : -1;
 }
