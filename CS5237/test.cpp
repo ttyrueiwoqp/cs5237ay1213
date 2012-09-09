@@ -169,7 +169,7 @@ void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input100.txt", "output.txt");
+	processFile("input200.txt", "output.txt");
 	globalSW.pause();
 }
 
