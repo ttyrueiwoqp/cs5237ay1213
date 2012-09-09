@@ -8,64 +8,8 @@ void LongInt::setZero_() {
 	nSign = 0;
 }
 
-//// add param, both positive
-//LongInt LongInt::add(LongInt& param) {
-//	LongInt result;
-//	result.nSign = 1;
-//
-//	int incr = 0;
-//	int size = 0;
-//	int a = (int) num.size();
-//	int b = (int) param.num.size();
-//	bool paramLonger = false;	
-//	
-//	// get the size of the shorter vector
-//	if (a < b) {
-//		size = a;
-//		paramLonger = true;
-//	} else {
-//		size = b;
-//	}
-//	
-//	// add the vectors from [0] to [size - 1]
-//	for (int i = 0; i < size; i++) {
-//		int sum = num[i] + param.num[i] + incr;
-//		if (sum >= DIVIDER) {
-//			incr = 1;
-//			result.num.push_back(sum - DIVIDER);
-//		} else {
-//			incr = 0;
-//			result.num.push_back(sum);
-//		}
-//	}
-//
-//	// add the rest by direct copying from the longer vector
-//	if (!paramLonger) {
-//		for (int i = size; i < a; i++) {
-//			result.num.push_back(num[i]);
-//		}
-//	} else {
-//		for (int i = size; i < b; i++) {
-//			result.num.push_back(param.num[i]);
-//		}
-//	}
-//	
-//	// add the incr at [size]
-//	if (incr == 1) {
-//		if ((int) result.num.size() > size) {
-//			result.num[size] += incr;
-//		} else {
-//			result.num.push_back(incr);
-//		}
-//	}
-//
-//	return result;
-//}
-
 // add param, both positive
-vector<int> LongInt::add(vector<int> a, vector<int> b) {
-	vector<int> result;
-
+void LongInt::add(const vector<int>& a, const vector<int>& b, vector<int>& result) {
 	int incr = 0;
 	int size = 0;
 	int p = (int) a.size();
@@ -111,23 +55,23 @@ vector<int> LongInt::add(vector<int> a, vector<int> b) {
 			result.push_back(incr);
 		}
 	}
-
-	return result;
 }
 
-vector<int> LongInt::addAllVec(vector<vector<int>> a) {
+void LongInt::addAllVec(const vector<vector<int>>& a, vector<int>& result) {
 	
+	result.clear();
 	int totalSize = a.size();	// max should be DIVIDER, else split in recursion
 	
-	while (totalSize > DIVIDER) {
-		vector<vector<int>> temp;
-		for (int i = 0; i < DIVIDER; i++) {
-			temp.push_back(a.back());
-			a.pop_back();
-		}
-		a.push_back(addAllVec(temp));
-		totalSize = a.size();
-	}
+	//while (totalSize > DIVIDER) {
+	//	vector<vector<int>> temp;
+	//	for (int i = 0; i < DIVIDER; i++) {
+	//		temp.push_back(a.back());
+	//		a.pop_back();
+	//	}
+	//	addAllVec(temp, result);
+	//	a.push_back(result);
+	//	totalSize = a.size();
+	//}
 
 	// track the size
 	vector<int> tracker(totalSize);
@@ -135,15 +79,17 @@ vector<int> LongInt::addAllVec(vector<vector<int>> a) {
 		tracker[i] = a[i].size();
 	}
 
-	vector<int> result;
 	int j = 0;
 	int incr = 0;
 	int remain = totalSize;
 	while (remain > 0) {
 		int sum = incr;
 		incr = 0;
-		// loop though a[i] at index j
-		for (int i = 0; i < totalSize; i++)	 {
+
+		int aIdx = (j <= a[0].size()) ? 0 : (((j - 1 - a[0].size()) / NTOOM) << 1) + 1;		
+		int bIdx = ((j / NTOOM) << 1) + 1;
+		bIdx = (bIdx < totalSize) ? bIdx : totalSize;
+		for (int i = aIdx; i < bIdx; i++) {	// loop though a[i] at index j
 			if (tracker[i] == -1) {			// a[i] already finished
 				
 			} else if (tracker[i] == j) {	// finish adding a[i]				
@@ -160,58 +106,19 @@ vector<int> LongInt::addAllVec(vector<vector<int>> a) {
 				sum = temp;
 			}
 		}
-		
-		result.push_back(sum);
+
+		if (remain > 0) {
+			result.push_back(sum);
+		} else if (incr > 0) {
+			result.push_back(incr);
+		}
+
 		j++;
 	}
-	
-	if (incr != 0)
-		result.push_back(incr);
-
-	return result;
 }
 
-//// subtract param, both positive, assume abs(this) > abs(param)
-//LongInt LongInt::subtract(LongInt& param) {
-//	LongInt result;
-//	result.nSign = 1;
-//
-//	int decr = 0;
-//	int a = (int) num.size();
-//	int b = (int) param.num.size();
-//	bool paramLonger = false;
-//	
-//	// subtract the vectors from [0] to [b - 1]
-//	for (int i = 0; i < b; i++) {
-//		int sum = num[i] - decr - param.num[i];
-//		if (sum < 0) {
-//			decr = 1;
-//			result.num.push_back(sum + DIVIDER);			
-//		} else {
-//			decr = 0;
-//			result.num.push_back(sum);
-//		}
-//	}
-//
-//	// add the rest by direct copying from num
-//	for (int i = b; i < a; i++) {
-//		result.num.push_back(num[i]);
-//	}
-//	
-//	// deduct the decr at [b]
-//	// decr == 1 implies that num[b] is valid, since abs(this) > abs(param)
-//	if (decr == 1) {
-//		result.num[b] -= decr;
-//	}
-//
-//	result.removeLeadingZeros();
-//				
-//	return result;
-//}
-
 // subtract param, both positive, assume abs(a) > abs(b)
-vector<int> LongInt::subtract(vector<int> a, vector<int> b) {
-	vector<int> result;
+void LongInt::subtract(const vector<int>& a, const vector<int>& b, vector<int>& result) {
 
 	int decr = 0;
 	int p = (int) a.size();
@@ -242,72 +149,20 @@ vector<int> LongInt::subtract(vector<int> a, vector<int> b) {
 	}
 
 	removeLeadingZeros(result);
-				
-	return result;
 }
-
-///***********************************************************************
-//	mutiply by param which is at [n] position, where 0 < param < DIVIDER
-//	only consider positive number multiplication
-//	the whole idea is 
-//	aaaabbbbccccdddd * eeee		// result
-//	= bbbb0000dddd * eeee		// a
-//	+ aaaa0000cccc0000 * eeee	// b
-//************************************************************************/
-//LongInt LongInt::multiply(int param, int n) {
-//	// multiply by 0
-//	int size = (int) num.size();
-//	if (size == 0)
-//		return 0;
-//
-//	LongInt result;
-//	LongInt a;	
-//	result.nSign = 1;
-//	a.nSign = 1;
-//
-//	for (int m = 0; m < n; m++) {
-//		a.num.push_back(0);
-//	}
-//	for (int i = 0; i < size; i += 2) {
-//		int prod = num[i] * param;
-//		a.num.push_back(prod % DIVIDER);
-//		a.num.push_back(prod / DIVIDER);
-//	}
-//	if (size == 1) {
-//		result = a;
-//		result.removeLeadingZeros();
-//		return result;
-//	}
-//
-//	LongInt b;
-//	b.nSign = 1;
-//	for (int m = 0; m < n + 1; m++) {
-//		b.num.push_back(0);
-//	}
-//	for (int j = 1; j < size; j += 2) {
-//		int prod = num[j] * param;
-//		b.num.push_back(prod % DIVIDER);
-//		b.num.push_back(prod / DIVIDER);
-//	}
-//
-//	result = a.add(b);
-//	result.removeLeadingZeros();
-//	
-//	return result;
-//}
 
 /***********************************************************************
 	Using Toom-Cook multiplication
 	Only consider positive long int a, b
 	0 is handled by caller
 ************************************************************************/
-vector<int> LongInt::multiply(vector<int> a, vector<int> b) {
+void LongInt::multiply(const vector<int>& paramA, const vector<int>& paramB, vector<int>& result) {
 
 	vector<vector<int>> prod;
-	vector<int> result;
+	vector<int> a(paramA), b(paramB);
 
-	// add 0s to make the vector size of a, b multiples of NTOOM * 2, NTOOM
-	while (a.size() % (NTOOM << 1) != 0)
+	// add 0s to make the vector size of a, b multiples of NTOOM
+	while (a.size() % NTOOM != 0)
 		a.push_back(0);
 	while (b.size() % NTOOM != 0)
 		b.push_back(0);
@@ -316,41 +171,27 @@ vector<int> LongInt::multiply(vector<int> a, vector<int> b) {
 	int q = b.size();
 
 	for (int j = 0; j < q; j += NTOOM) {
-		vector<int> w, x, y, z;
-		for (int k = 0; k < j; k++) {
-			w.push_back(0);
-			x.push_back(0);
-			y.push_back(0);
-			z.push_back(0);
-		}
 
-		for (int k = 0; k < NTOOM; k++) {
-			y.push_back(0);
-			z.push_back(0);
+		vector<int> m(j), n(j + NTOOM);
+		
+		for (int i = 0; i < p; i += NTOOM) {
+			
+			if ((i & 1) == 0)
+				toom_3(a[i], a[i+1], a[i+2], b[j], b[j+1], b[j+2], m);
+			else
+				toom_3(a[i], a[i+1], a[i+2], b[j], b[j+1], b[j+2], n);
 		}
-
-		for (int i = 0; i < p; i += (NTOOM << 1)) {
-			toom_3(w, x, a[i], a[i+1], a[i+2], b[j], b[j+1], b[j+2]);
-		}
-		for (int i = NTOOM; i < p; i += (NTOOM << 1)) {
-			toom_3(y, z, a[i], a[i+1], a[i+2], b[j], b[j+1], b[j+2]);	
-		}
-
-		prod.push_back(w);
-		prod.push_back(x);
-		prod.push_back(y);
-		prod.push_back(z);
+		prod.push_back(m);
+		prod.push_back(n);
 	}
 
-	result = addAllVec(prod);
+	addAllVec(prod, result);
 	removeLeadingZeros(result);
-
-	return result;
 }
 
-void LongInt::toom_3(vector<int>& m, vector<int>& n, int a0, int a1, int a2, int b0, int b1, int b2) {
+void LongInt::toom_3(int a0, int a1, int a2, int b0, int b1, int b2, vector<int>& result) {
 
-	int p[5], q[5], r[5], t[5];
+	int p[5], q[5], r[5], s[5], t[5];
 
 	int pt = a0 + a2;
 	p[0] = a0;
@@ -383,43 +224,25 @@ void LongInt::toom_3(vector<int>& m, vector<int>& n, int a0, int a1, int a2, int
 	//	cout << a0 << "\t"; cout << a1 << "\t"; cout << a2 << endl;
 	//	cout << b0 << "\t"; cout << b1 << "\t"; cout << b2 << endl;
 	//}
-	for (int i = 0; i < 5; i += 2) {
-		m.push_back(t[i] % DIVIDER);
-		m.push_back(t[i] / DIVIDER);
+	
+	for (int i = 0; i < 5; i++) {
+		s[i] = t[i] / DIVIDER;
+		t[i] -= s[i] * DIVIDER;
 	}
 
-	n.push_back(0);
-	for (int j = 1; j < 5; j += 2) {
-		n.push_back(t[j] % DIVIDER);
-		n.push_back(t[j] / DIVIDER);
+	result.push_back(t[0]);
+	int incr = 0;
+	for (int i = 0; i < 4; i++) {
+		int temp = s[i] + t[i + 1] + incr;
+		incr = temp / DIVIDER;
+		result.push_back(temp - incr * DIVIDER);
 	}
-	n.push_back(0);	// make m.size() == n.size() == 6
+	result.push_back(s[4] + incr);
 
 }
 
-//// check abs values, 1 if greater, 0 if equal, -1 if less
-//int LongInt::absCompare(LongInt& param) {
-//	int a = (int) num.size();
-//	int b = (int) param.num.size();
-//
-//	if (a > b) {
-//		return 1;
-//	} else if (a < b) {
-//		return -1;
-//	} else {
-//		for (int i = a - 1; i >= 0; i--) {
-//			if (num[i] > param.num[i]){
-//				return 1;
-//			} else if (num[i] < param.num[i]) {
-//				return -1;
-//			}
-//		}
-//		return 0; // equal
-//	}
-//}
-
 // check abs values, 1 if greater, 0 if equal, -1 if less
-int LongInt::absCompare(vector<int> a, vector<int> b) {
+int LongInt::absCompare(const vector<int>& a, const vector<int>& b) {
 	int p = (int) a.size();
 	int q = (int) b.size();
 
@@ -439,18 +262,6 @@ int LongInt::absCompare(vector<int> a, vector<int> b) {
 	}
 }
 
-//// remove the leading zeros
-//void LongInt::removeLeadingZeros() {
-//
-//	int size = num.size();
-//	for (int i = size - 1; i > 0; i--) {
-//		if (num[i] == 0)
-//			num.pop_back();
-//		else
-//			break;
-//	}
-//}
-
 // remove the leading zeros
 void LongInt::removeLeadingZeros(vector<int>& param) {
 
@@ -468,7 +279,7 @@ LongInt::LongInt() {
 	nSign = 0;
 }
 
-LongInt::LongInt(LongInt& param) {
+LongInt::LongInt(const LongInt& param) {
 	num = param.num;
 	nSign = param.nSign;
 }
@@ -537,21 +348,21 @@ LongInt& LongInt::operator=(int i) {
 	return *this;
 }
 
-LongInt& LongInt::operator=(LongInt& param) {
+LongInt& LongInt::operator=(const LongInt& param) {
 	num = param.num;
 	nSign = param.nSign;
 	return *this;
 }
 
-LongInt LongInt::operator+(LongInt& param) {
+LongInt LongInt::operator+(const LongInt& param) {
 	LongInt result;
 
 	if (eqZero()) {
-		result = param;
-	} else if (param.eqZero()) {
+		result = LongInt(param);
+	} else if (param.nSign == 0) {
 		result = *this;
-	} else if (sign() == param.sign()) {
-		result.num = add(num, param.num);
+	} else if (sign() == param.nSign) {
+		add(num, param.num, result.num);
 		result.nSign = sign();
 	} else {
 		// different sign, subtract
@@ -559,10 +370,10 @@ LongInt LongInt::operator+(LongInt& param) {
 		if (temp == 0) {
 			result.setZero_();
 		} else if (temp > 0) {
-			result.num = subtract(num, param.num);
+			subtract(num, param.num, result.num);
 			result.nSign = sign();
 		} else {
-			result.num = subtract(param.num, num);
+			subtract(param.num, num, result.num);
 			result.nSign = 0 - sign();
 		}
 	}
@@ -570,52 +381,53 @@ LongInt LongInt::operator+(LongInt& param) {
 	return result;			
 }
 
-LongInt LongInt::operator-(LongInt& param) {
+LongInt LongInt::operator-(const LongInt& param) {
 	LongInt result;
 
 	if (eqZero()) {
-		result = param;
-		result.nSign = 0 - result.nSign;
-	} else if (param.eqZero()) {
+		result.num = param.num;
+		result.nSign = 0 - param.nSign;
+	} else if (param.nSign == 0) {
 		result = *this;
-	} else if (sign() == param.sign()) {
+	} else if (sign() == param.nSign) {
 		// same sign, subtract
 		int temp = absCompare(num, param.num);
 		if (temp == 0) {
 			result.setZero_();
 		} else if (temp > 0) {
-			result.num = subtract(num, param.num);
+			subtract(num, param.num, result.num);
 			result.nSign = sign();
 		} else {
-			result.num = subtract(param.num, num);
+			subtract(param.num, num, result.num);
 			result.nSign = 0 - sign();
 		}
 
 	} else {
-		result.num = add(num, param.num);
+		add(num, param.num, result.num);
 		result.nSign = sign();
 	}
 
 	return result;
 }
 
-LongInt LongInt::operator*(LongInt& param) {
+LongInt LongInt::operator*(const LongInt& param) {
 	LongInt result;
-	result.setZero_();
 
-	if (eqZero() || param.eqZero())		
+	if (eqZero() || param.nSign == 0)	{
+		result.setZero_();
 		return result;
+	}
 	
-	result.num = multiply(num, param.num);
-	result.nSign = sign() * param.sign();
+	multiply(num, param.num, result.num);
+	result.nSign = sign() * param.nSign;
 
 	return result;
 }
 
-bool LongInt::operator>(LongInt& param) {
-	if (sign() > param.sign())
+bool LongInt::operator>(const LongInt& param) {
+	if (sign() > param.nSign)
 		return true;
-	else if (sign() < param.sign())
+	else if (sign() < param.nSign)
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -627,10 +439,10 @@ bool LongInt::operator>(LongInt& param) {
 	return (sign() == result) ? true : false;
 }
 
-bool LongInt::operator<(LongInt& param) {
-	if (sign() < param.sign())
+bool LongInt::operator<(const LongInt& param) {
+	if (sign() < param.nSign)
 		return true;
-	else if (sign() > param.sign())
+	else if (sign() > param.nSign)
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -642,8 +454,8 @@ bool LongInt::operator<(LongInt& param) {
 	return (sign() == 0 - result) ? true : false;
 }
 
-bool LongInt::operator==(LongInt& param) {
-	if (sign() != param.sign())
+bool LongInt::operator==(const LongInt& param) {
+	if (sign() != param.nSign)
 		return false;
 
 	int a = (int) num.size();
@@ -676,10 +488,6 @@ bool LongInt::eqZero() {
 
 int LongInt::sign() {
 	return nSign;
-}
-
-vector<int> LongInt::getNum() {
-	return num;
 }
 
 double LongInt::doubleValue() {
@@ -715,7 +523,7 @@ string LongInt::toString() {
 	return result;
 }
 
-LongInt operator-(LongInt& param) {
+LongInt operator-(const LongInt& param) {
 	LongInt result(param);
 	result.nSign = 0 - param.nSign;
 	return result;
