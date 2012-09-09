@@ -359,9 +359,9 @@ LongInt LongInt::operator+(const LongInt& param) {
 
 	if (eqZero()) {
 		result = LongInt(param);
-	} else if (param.nSign == 0) {
+	} else if (param.eqZero()) {
 		result = *this;
-	} else if (sign() == param.nSign) {
+	} else if (sign() == param.sign()) {
 		add(num, param.num, result.num);
 		result.nSign = sign();
 	} else {
@@ -386,10 +386,10 @@ LongInt LongInt::operator-(const LongInt& param) {
 
 	if (eqZero()) {
 		result.num = param.num;
-		result.nSign = 0 - param.nSign;
-	} else if (param.nSign == 0) {
+		result.nSign = 0 - param.sign();
+	} else if (param.eqZero()) {
 		result = *this;
-	} else if (sign() == param.nSign) {
+	} else if (sign() == param.sign()) {
 		// same sign, subtract
 		int temp = absCompare(num, param.num);
 		if (temp == 0) {
@@ -413,21 +413,21 @@ LongInt LongInt::operator-(const LongInt& param) {
 LongInt LongInt::operator*(const LongInt& param) {
 	LongInt result;
 
-	if (eqZero() || param.nSign == 0)	{
+	if (eqZero() || param.eqZero())	{
 		result.setZero_();
 		return result;
 	}
 	
 	multiply(num, param.num, result.num);
-	result.nSign = sign() * param.nSign;
+	result.nSign = sign() * param.sign();
 
 	return result;
 }
 
 bool LongInt::operator>(const LongInt& param) {
-	if (sign() > param.nSign)
+	if (sign() > param.sign())
 		return true;
-	else if (sign() < param.nSign)
+	else if (sign() < param.sign())
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -440,9 +440,9 @@ bool LongInt::operator>(const LongInt& param) {
 }
 
 bool LongInt::operator<(const LongInt& param) {
-	if (sign() < param.nSign)
+	if (sign() < param.sign())
 		return true;
-	else if (sign() > param.nSign)
+	else if (sign() > param.sign())
 		return false;
 	else if (sign() == 0)
 		return false;
@@ -455,7 +455,7 @@ bool LongInt::operator<(const LongInt& param) {
 }
 
 bool LongInt::operator==(const LongInt& param) {
-	if (sign() != param.nSign)
+	if (sign() != param.sign())
 		return false;
 
 	int a = (int) num.size();
@@ -473,7 +473,7 @@ bool LongInt::operator==(const LongInt& param) {
 	}
 }
 
-bool LongInt::eqZero() {
+bool LongInt::eqZero() const {
 	if (sign() == 0)
 		return true;
 
@@ -486,7 +486,7 @@ bool LongInt::eqZero() {
 	return true;
 }
 
-int LongInt::sign() {
+int LongInt::sign() const {
 	return nSign;
 }
 
@@ -525,6 +525,6 @@ string LongInt::toString() {
 
 LongInt operator-(const LongInt& param) {
 	LongInt result(param);
-	result.nSign = 0 - param.nSign;
+	result.nSign = 0 - param.sign();
 	return result;
 }
