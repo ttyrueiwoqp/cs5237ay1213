@@ -7,7 +7,7 @@ int signDet(LongInt x1, LongInt y1, LongInt w1,
 {
 	LongInt res = x1*y2*w3 + y1*w2*x3 + w1*x2*y3 -
 		w1*y2*x3 - y1*x2*w3 - x1*w2*y3;
-	return (res > 0) ? 1 : (res == 0) ? 0 : -1;
+	return res.sign();
 }
 
 
