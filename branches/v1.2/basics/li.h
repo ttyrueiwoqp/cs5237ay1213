@@ -44,8 +44,8 @@ class LongInt {
 		bool operator<(const LongInt&);
 		bool operator==(const LongInt&);
 
-		bool eqZero();  // return true if it is zero
-		int sign();     // return +1 if it's positive, -1 if it's negative, 0 if it's zero
+		bool eqZero() const;  // return true if it is zero
+		int sign() const;     // return +1 if it's positive, -1 if it's negative, 0 if it's zero
 
 		double doubleValue(); // return a double approximation (you can assume that it will not be out of bound)
 
