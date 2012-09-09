@@ -26,13 +26,14 @@ static string groupName = "(Your one-line group name here)";
 
 void processFile(char* ifilename, char* ofilename){
 
-	string line_noStr;
+	LongInt li;
+	PointSet pointSet; // The points added by the user
 
+	string line_noStr;
 	string line;   // each line of the file
 	string command;// the command of each line
 	string numberStr; // for single LongInt operation
 	string outputAns = "Answer of your computation"; // the answer you computed
-	LongInt output;
 
 	ifstream inputFile(ifilename,ios::in);
 	ofstream outputFile(ofilename,ios::out);
@@ -41,12 +42,7 @@ void processFile(char* ifilename, char* ofilename){
 		cerr << "Error: Cannot read input file \"" << ifilename << "\"";
 		exit(1);
 	}
-	/*
-	LongInt a(1);
-	LongInt b("1234567890");
-	LongInt c = a * b;
-	c.dump();
-	*/
+
 	while(inputFile.good()){
 
 		getline(inputFile,line);
@@ -62,87 +58,87 @@ void processFile(char* ifilename, char* ofilename){
 
 		if(!command.compare("LX")){
 			linestream >> numberStr;
-
-			LongInt num(numberStr);
-			output = num;
-			outputAns = output.toString();
+			//Perform the load operation here
+			li = LongInt(numberStr);
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("AD")){
 			linestream >> numberStr;
-
-			LongInt num(numberStr);
-			output = output + num;
-			outputAns = output.toString();
-			
+			//Perform addition
+			li = li + LongInt(numberStr);
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("SB")){
 			linestream >> numberStr;
-			
-			LongInt num(numberStr);
-			output = output - num;
-			outputAns = output.toString();
-
+			//Perform substraction here
+			li = li - LongInt(numberStr);
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("MU")){
 			linestream >> numberStr;
-			
-			LongInt num(numberStr);
-			output = output * num;
-			outputAns = output.toString();
-
+			li = li * LongInt(numberStr);
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("NG")){
-			linestream >> numberStr;
-			
-			output = -output;
-			outputAns = output.toString();
-
+			//linestream >> numberStr;
+			li = -li;
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("SD")){
-			// you can assume that the three rows of matrix are in three seperate lines in the file
-			linestream >> numberStr;
-			getline(inputFile,line);		
-			getline(inputFile,line);		
-			getline(inputFile,line);
+			// you can assume that the three rows of matrix are in three seperate lines in the fil
+			LongInt det[3][3];
+			for(int i = 0; i < 3; i++)
+				for(int j = 0; j < 3; j++)
+				{
+					inputFile >> numberStr;
+					det[i][j] = LongInt(numberStr);
+				}
 
+			li = signDet(det);
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("AP")){
 			linestream >> numberStr;
+			LongInt x, y;
+			x = LongInt(numberStr);
+			linestream >> numberStr;
+			y = LongInt(numberStr);
+
+			li = pointSet.addPoint(x, y);			
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " #POINT = " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IT")){
+			int p1, p2, p3, p;
 			linestream >> numberStr;
 
+			// Read the point indices one by one
+			p = atoi(numberStr.c_str()); // converts string to integer
 			linestream >> numberStr;
-
+			p1 = atoi(numberStr.c_str());
 			linestream >> numberStr;
-
+			p2 = atoi(numberStr.c_str());
 			linestream >> numberStr;
+			p3 = atoi(numberStr.c_str());
 
+			li = pointSet.inTri(p1, p2, p3, p);
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IC")){
@@ -155,21 +151,21 @@ void processFile(char* ifilename, char* ofilename){
 			linestream >> numberStr;
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << outputAns << endl;
+			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else{
 			cerr << "Exception: Wrong input command" << endl;
 		}
 	}
-	
+
 }
 
 void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input100.txt", "output.txt");
+	processFile("input.txt", "output.txt");
 	globalSW.pause();
 }
 
