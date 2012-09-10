@@ -106,6 +106,7 @@ void processFile(char* ifilename, char* ofilename){
 				}
 
 			li = signDet(det);
+
 			globalSW.pause();
 			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
@@ -137,18 +138,25 @@ void processFile(char* ifilename, char* ofilename){
 			p3 = atoi(numberStr.c_str());
 
 			li = pointSet.inTri(p1, p2, p3, p);
+
 			globalSW.pause();
 			outputFile << line_noStr  << " " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IC")){
+			int p1, p2, p3, p;
 			linestream >> numberStr;
 
+			// Read the point indices one by one
+			p = atoi(numberStr.c_str()); // converts string to integer
 			linestream >> numberStr;
+			p1 = atoi(numberStr.c_str());
+			linestream >> numberStr;
+			p2 = atoi(numberStr.c_str());
+			linestream >> numberStr;
+			p3 = atoi(numberStr.c_str());
 
-			linestream >> numberStr;
-
-			linestream >> numberStr;
+			li = pointSet.inCircle(p1, p2, p3, p);
 
 			globalSW.pause();
 			outputFile << line_noStr  << " " << li.toString() << endl;
@@ -165,7 +173,7 @@ void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input200.txt", "output.txt");
+	processFile("input100.txt", "output.txt");
 	globalSW.pause();
 }
 
