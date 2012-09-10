@@ -60,61 +60,34 @@ void LongInt::add(const vector<int>& a, const vector<int>& b, vector<int>& resul
 void LongInt::addAllVec(const vector<vector<int>>& a, vector<int>& result) {
 	
 	result.clear();
-	int totalSize = a.size();	// max should be DIVIDER, else split in recursion
-	
-	//while (totalSize > DIVIDER) {
-	//	vector<vector<int>> temp;
-	//	for (int i = 0; i < DIVIDER; i++) {
-	//		temp.push_back(a.back());
-	//		a.pop_back();
-	//	}
-	//	addAllVec(temp, result);
-	//	a.push_back(result);
-	//	totalSize = a.size();
-	//}
+	int totalSize = a.size();
 
-	// track the size
+	// track the index of size
 	vector<int> tracker(totalSize);
 	for (int i = 0; i < totalSize; i++) {
-		tracker[i] = a[i].size();
+		tracker[i] = a[i].size() - 1;
 	}
 
-	int j = 0;
 	int incr = 0;
-	int remain = totalSize;
-	while (remain > 0) {
-		int sum = incr;
-		incr = 0;
+	int jEnd = (tracker[0] + ((totalSize + 2) >> 1) * NTOOM);
+	for (int j = 0; j <= jEnd; j++) {
+		int sum = incr % DIVIDER;
+		incr = incr / DIVIDER;
 
-		int aIdx = (j <= a[0].size()) ? 0 : (((j - 1 - a[0].size()) / NTOOM) << 1) + 1;		
-		int bIdx = ((j / NTOOM) << 1) + 1;
-		bIdx = (bIdx < totalSize) ? bIdx : totalSize;
-		for (int i = aIdx; i < bIdx; i++) {	// loop though a[i] at index j
-			if (tracker[i] == -1) {			// a[i] already finished
-				
-			} else if (tracker[i] == j) {	// finish adding a[i]				
-				tracker[i] = -1;
-				remain--;
-			} else if (a[i][j] == 0) {
-			
-			} else {
+		int iBegin = (j < a[0].size()) ? 0 : (((j - a[0].size()) / NTOOM) << 1) + 1;
+		int iEnd = ((j / NTOOM) << 1) + 1;
+		iEnd = (iEnd <= totalSize) ? iEnd : totalSize;
+		for (int i = iBegin; i < iEnd; i++) {
+
+			if (j <= tracker[i] && a[i][j] != 0) {
 				int temp = sum + a[i][j];
-				while (temp >= DIVIDER) {
-					temp = temp - DIVIDER;
-					incr++;
-				}
-				sum = temp;
+				sum = temp % DIVIDER;
+				incr += temp / DIVIDER;
 			}
 		}
-
-		if (remain > 0) {
-			result.push_back(sum);
-		} else if (incr > 0) {
-			result.push_back(incr);
-		}
-
-		j++;
+		result.push_back(sum);
 	}
+	result.push_back(incr);
 }
 
 // subtract param, both positive, assume abs(a) > abs(b)
@@ -218,16 +191,10 @@ void LongInt::toom_3(int a0, int a1, int a2, int b0, int b1, int b2, vector<int>
 	t[3] = ((t[2] - t[3]) >> 1) + (r[4] << 1);
 	t[2] = t[2] + t[1] - r[4];
 	t[1] = t[1] - t[3];
-
-	//if (t[1] >= 100000000){
-	//	cout << "t0\t" << t[1] << endl;
-	//	cout << a0 << "\t"; cout << a1 << "\t"; cout << a2 << endl;
-	//	cout << b0 << "\t"; cout << b1 << "\t"; cout << b2 << endl;
-	//}
-	
+		
 	for (int i = 0; i < 5; i++) {
 		s[i] = t[i] / DIVIDER;
-		t[i] -= s[i] * DIVIDER;
+		t[i] = t[i] % DIVIDER;
 	}
 
 	result.push_back(t[0]);
@@ -235,7 +202,7 @@ void LongInt::toom_3(int a0, int a1, int a2, int b0, int b1, int b2, vector<int>
 	for (int i = 0; i < 4; i++) {
 		int temp = s[i] + t[i + 1] + incr;
 		incr = temp / DIVIDER;
-		result.push_back(temp - incr * DIVIDER);
+		result.push_back(temp % DIVIDER);
 	}
 	result.push_back(s[4] + incr);
 
