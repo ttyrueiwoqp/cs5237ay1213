@@ -74,7 +74,7 @@ void LongInt::addAllVec(const vector<vector<int>>& a, vector<int>& result) {
 		int sum = incr % DIVIDER;
 		incr = incr / DIVIDER;
 
-		int iBegin = (j < a[0].size()) ? 0 : (((j - a[0].size()) / NTOOM) << 1) + 1;
+		int iBegin = (j <= tracker[0]) ? 0 : (((j - tracker[0] - 1) / NTOOM) << 1) + 1;
 		int iEnd = ((j / NTOOM) << 1) + 1;
 		iEnd = (iEnd <= totalSize) ? iEnd : totalSize;
 		for (int i = iBegin; i < iEnd; i++) {
@@ -458,8 +458,14 @@ int LongInt::sign() const {
 }
 
 double LongInt::doubleValue() {
-	//TODO
-	return 0.0;
+	double result = 0.0;
+	int size = (int) num.size();
+	int incr = 1;
+	for (int i = 0; i < size; i++) {
+		result += num[i] * incr;
+		incr *= DIVIDER;
+	}
+	return result;
 }
 
 string LongInt::toString() {

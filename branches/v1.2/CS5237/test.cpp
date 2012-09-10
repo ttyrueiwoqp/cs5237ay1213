@@ -41,12 +41,7 @@ void processFile(char* ifilename, char* ofilename){
 		cerr << "Error: Cannot read input file \"" << ifilename << "\"";
 		exit(1);
 	}
-	/*
-	LongInt a(1);
-	LongInt b("1234567890");
-	LongInt c = a * b;
-	c.dump();
-	*/
+	
 	while(inputFile.good()){
 
 		getline(inputFile,line);
