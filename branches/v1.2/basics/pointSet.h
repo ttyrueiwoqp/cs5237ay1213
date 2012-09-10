@@ -6,6 +6,9 @@
 class PointSet {
 
 public:
+
+	PointSet();
+
 	int addPoint(LongInt x1,LongInt y1); 
 	// add an ith(according to the adding sequence)  point (x1,y1), return i.
 
