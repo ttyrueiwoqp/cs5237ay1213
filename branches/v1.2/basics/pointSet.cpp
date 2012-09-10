@@ -56,7 +56,41 @@ int PointSet::inTri(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 	return ((b1.sign() == b2.sign()) && (b2.sign() == b3.sign())) ? 1 : -1;
 }
 
+LongInt det3x3(LongInt a, LongInt b, LongInt c,
+		      LongInt d, LongInt e, LongInt f,
+		      LongInt g, LongInt h, LongInt i){
+
+	return a*e*i + b*f*g + c*d*h
+		- c*e*g - b*d*i - a*f*h;
+} 
+
+LongInt det4x4(LongInt a, LongInt b, LongInt c, LongInt d,
+		       LongInt e, LongInt f, LongInt g, LongInt h,
+		       LongInt i, LongInt j, LongInt k, LongInt l,
+		       LongInt m, LongInt n, LongInt o, LongInt p){
+
+   return a*det3x3(f,g,h,
+				   j,k,l,
+				   n,o,p)
+	    - b*det3x3(e,g,h,
+				   i,k,l,
+				   m,o,p)
+	    + c*det3x3(e,f,h,
+				   i,j,l,
+				   m,n,p)
+		- d*det3x3(e,f,g,
+				   i,j,k,
+				   m,n,o);
+}
+
 int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 {
-	return 0;
+	return (det4x4(points_x[p1Idx], points_y[p1Idx], points_x[p1Idx]*points_x[p1Idx] + points_y[p1Idx]*points_y[p1Idx], 1,
+				  points_x[p2Idx], points_y[p2Idx], points_x[p2Idx]*points_x[p2Idx] + points_y[p2Idx]*points_y[p2Idx], 1,
+				  points_x[p3Idx], points_y[p3Idx], points_x[p3Idx]*points_x[p3Idx] + points_y[p3Idx]*points_y[p3Idx], 1,
+				  points_x[pIdx],  points_y[pIdx],  points_x[pIdx]*points_x[pIdx]   + points_y[pIdx]*points_y[pIdx],   1)
+		 * det3x3(points_x[p1Idx], points_y[p1Idx], 1,
+				  points_x[p2Idx], points_y[p2Idx], 1,
+				  points_x[p3Idx], points_y[p3Idx], 1))
+				  > -1;
 }
