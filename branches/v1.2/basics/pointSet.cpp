@@ -90,7 +90,8 @@ det(bx by bx*bx+by*by 1) = det(	bx-dx by-dy (bx-dx)(bx-dx)+(by-dy)(by-dy)	)
 	cx cy cx*cx+cy*cy 1			cx-dx cy-dy (cx-dx)(cx-dx)+(cy-dy)(cy-dy)
 	dx dy dx*dx+dy*dy 1
 
-returns 1 if pIdx lies in counterclockwise orientation of p1, p2, p3,
+returns:
+1 if pIdx lies in counterclockwise orientation of p1, p2, p3,
 -1 if pIdx lies in clockwise orientation of p1, p2, p3,
 0 if on the circle
 **************************/
@@ -109,22 +110,62 @@ int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx) {
 	return det3x3(a, b, c, d, e, f, g, h, i).sign();
 }
 
+// check whether the pt lies in the circle formed by 2 pts
+int inCircleTest2Pt(int p1Idx, int p2Idx, int pIdx) {
+
+	LongInt a = points_x[pIdx] + points_x[pIdx] - points_x[p1Idx] - points_x[p2Idx];
+	LongInt b = points_y[pIdx] + points_y[pIdx] - points_y[p1Idx] - points_y[p2Idx];
+	LongInt c = points_x[p1Idx] - points_x[p2Idx];
+	LongInt d = points_y[p1Idx] - points_y[p2Idx];
+
+	LongInt e = a * a + b * b;
+	LongInt f = c * c + d * d;
+
+	if (e == f)
+		return 0;
+	else if (e < f)
+		return 1;
+	else
+		return -1;
+}
+
 int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 {
-	int orient = orient2D(points_x[p1Idx], points_y[p1Idx],
-				  points_x[p2Idx], points_y[p2Idx],
-				  points_x[p3Idx], points_y[p3Idx]);
+	// Decrement by one because of vector indexing
+	p1Idx--; p2Idx--; p3Idx--; pIdx--;
 
-	// collinear, return 0
-	if (orient == 0)
-		return 0;
+	int orient = orient2D(points_x[p1Idx], points_y[p1Idx], 
+		points_x[p2Idx], points_y[p2Idx], 
+		points_x[p3Idx], points_y[p3Idx]);
+	
+	// collinear, return 1 if 3 pts are the same, -1 if all different
+	// if 2 pts are the same, check whether the pt lies in the circle formed by 2 different pts
+	if (orient == 0) {
+		// Check whether pts are the same
+		bool a = ((points_x[p2Idx] == points_x[p3Idx]) && (points_y[p2Idx] == points_y[p3Idx]));
+		bool b = ((points_x[p1Idx] == points_x[p3Idx]) && (points_y[p1Idx] == points_y[p3Idx]));
+		bool c = ((points_x[p1Idx] == points_x[p2Idx]) && (points_y[p1Idx] == points_y[p2Idx]));
+
+		if (a && b)
+			return 1;	// p1 & p2 & p3 are the same
+		else if (a)
+			return inCircleTest2Pt(p1Idx, p2Idx, pIdx);	// p2 & p3 are the same
+		else if (b)
+			return inCircleTest2Pt(p2Idx, p3Idx, pIdx);	// p1 & p3 are the same
+		else if (c)
+			return inCircleTest2Pt(p1Idx, p3Idx, pIdx);	// p1 & p2 are the same
+		else
+			return -1;	// collinear
+	}
 
 	int isInCircle = inCircleTest(p1Idx, p2Idx, p3Idx, pIdx);
 
-	if (orient == isInCircle)
+	if (isInCircle == 0)
+		return 0;
+	else if (orient == isInCircle)
 		return 1;
-
-	return 0;
+	else
+		return -1;
 }
 
 
