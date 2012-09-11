@@ -121,7 +121,7 @@ void processFile(char* ifilename, char* ofilename){
 			li = pointSet.addPoint(x, y);			
 
 			globalSW.pause();
-			outputFile << line_noStr  << " " << li.toString() << endl;
+			outputFile << line_noStr  << " #POINT = " << li.toString() << endl;
 			globalSW.resume();
 		}
 		else if(!command.compare("IT")){
@@ -173,7 +173,7 @@ void runningExperiment()
 {
 	globalSW.reset();
 	globalSW.resume();
-	processFile("input100.txt", "output.txt");
+	processFile("input200.txt", "output.txt");
 	globalSW.pause();
 }
 
