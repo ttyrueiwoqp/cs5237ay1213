@@ -2,6 +2,10 @@
 #define POINTSETH
 
 #include "li.h"
+#include <vector>
+
+extern vector<LongInt> points_x;
+extern vector<LongInt> points_y;
 
 class PointSet {
 

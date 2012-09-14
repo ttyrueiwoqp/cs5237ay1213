@@ -14,9 +14,9 @@
 
 using namespace std;
 
+PointSetArray points; // The points added by the user.
 
 // These three functions are for those who are not familiar with OpenGL, you can change these or even completely ignore them
-
 void drawAPoint(double x,double y)
 {
 		glPointSize(5);
@@ -56,14 +56,21 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
 
-
-	// draw your output here (erase the following 3 lines)
-	drawAPoint(100,100);
-	drawALine(200,200,300,300);
-	drawATriangle(400,400,400,500,500,500);
+	// Draw all points
+	for (int i = 0; i < points.noPt(); i++)
+	{
+		LongInt x, y;
+		int res = points.getPoint(i, x, y);
+		if (res != 1)
+			cout << "Error, wrong point index" << endl;
+		else
+		{
+			drawAPoint(x.doubleValue(), y.doubleValue());
+		}
+	}
 
 	glPopMatrix();
-	glutSwapBuffers ();
+	glutSwapBuffers();
 }
 
 void reshape (int w, int h)
@@ -98,7 +105,6 @@ void readFile(){
 	ifstream inputFile("input.txt",ios::in);
 
 	LongInt li;
-	PointSet pointSet;
 
 	if(inputFile.fail()){
 		cerr << "Error: Cannot read input file \"" << "input.txt" << "\"";
@@ -106,7 +112,6 @@ void readFile(){
 	}
 
 	while(inputFile.good()){
-
 		getline(inputFile,line);
 		if(line.empty()) {
 			command = "";
@@ -125,7 +130,7 @@ void readFile(){
 			linestream >> numberStr;
 			y = LongInt(numberStr);
 
-			li = pointSet.addPoint(x, y);
+			li = points.addPoint(x, y);
 		}
 		else if(!command.compare("OT")){
 			linestream >> numberStr;
@@ -140,7 +145,6 @@ void readFile(){
 		}
 		else if(!command.compare("DY")){
 			linestream >> numberStr;
-
 		}
 		else{
 			cerr << "Exception: Wrong input command" << endl;
@@ -196,7 +200,7 @@ void mouse(int button, int state, int x, int y)
 	};
 	if((button == MOUSE_RIGHT_BUTTON)&&(state == GLUT_UP))
 	{
-
+		points.addPoint(LongInt(x), LongInt(y)); // add the point to the list of points
 	}
 
 	glutPostRedisplay();
