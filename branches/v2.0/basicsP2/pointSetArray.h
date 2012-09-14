@@ -3,6 +3,7 @@
 
 #include "..\basics\pointSet.h"
 
+using namespace std;
 
 class PointSetArray : public PointSet {
 
