@@ -97,6 +97,8 @@ void readFile(){
 
 	ifstream inputFile("input.txt",ios::in);
 
+	LongInt li;
+	PointSet pointSet;
 
 	if(inputFile.fail()){
 		cerr << "Error: Cannot read input file \"" << "input.txt" << "\"";
@@ -118,8 +120,12 @@ void readFile(){
 
 		if(!command.compare("AP")){
 			linestream >> numberStr;
+			LongInt x, y;
+			x = LongInt(numberStr);
 			linestream >> numberStr;
-		
+			y = LongInt(numberStr);
+
+			li = pointSet.addPoint(x, y);
 		}
 		else if(!command.compare("OT")){
 			linestream >> numberStr;
