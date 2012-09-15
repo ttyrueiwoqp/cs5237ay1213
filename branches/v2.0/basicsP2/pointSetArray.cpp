@@ -5,6 +5,9 @@ using namespace std;
 // put the x,y values into x1,y1, and return 1 if the point pIndex exists
 int PointSetArray::getPoint (int pIndex, LongInt& x1,LongInt& y1)
 {
+	// Decrement by one because of vector indexing
+	pIndex--;
+
 	if (pIndex < 0 || pIndex >= (int)points_x.size())
 		return 0; // points does not exist
 	x1 = points_x[pIndex];

@@ -1,5 +1,6 @@
 
 #include "basicsP2\pointSetArray.h"
+#include "basicsP2\Trist.h"
 
 #include "math.h"
 #include <iostream>
@@ -15,6 +16,7 @@
 using namespace std;
 
 PointSetArray points; // The points added by the user.
+Trist triangles; // The current triangles
 
 // These three functions are for those who are not familiar with OpenGL, you can change these or even completely ignore them
 void drawAPoint(double x,double y)
@@ -57,15 +59,41 @@ void display(void)
 	glPushMatrix();
 
 	// Draw all points
-	for (int i = 0; i < points.noPt(); i++)
+	for (int i = 1; i <= points.noPt(); i++)
 	{
 		LongInt x, y;
 		int res = points.getPoint(i, x, y);
 		if (res != 1)
 			cout << "Error, wrong point index" << endl;
 		else
-		{
 			drawAPoint(x.doubleValue(), y.doubleValue());
+	}
+
+	// Draw all triangles
+	for ( int i = 0; i < triangles.noTri(); i++)
+	{
+		int v1, v2, v3;
+
+		// How can I get a proper OpTri from here? i<< 3 looks wrong.
+		triangles.getVertexIdx(i << 3, v1, v2, v3);
+
+		LongInt x1, y1, x2, y2, x3, y3;
+		int res1 = points.getPoint(v1, x1, y1);
+		int res2 = points.getPoint(v2, x2, y2);
+		int res3 = points.getPoint(v3, x3, y3);
+		
+		if (res1 != 1 || res2 != 1 || res3 != 1)
+			cout << "Error, wrong triangle point index" << endl;
+		else
+		{
+			drawATriangle(x1.doubleValue(), y1.doubleValue(),
+			x2.doubleValue(), y2.doubleValue(),
+			x3.doubleValue(), y3.doubleValue());
+			
+			// Draw triangle outline
+			drawALine(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
+			drawALine(x2.doubleValue(), y2.doubleValue(), x3.doubleValue(), y3.doubleValue());
+			drawALine(x3.doubleValue(), y3.doubleValue(), x1.doubleValue(), y1.doubleValue());
 		}
 	}
 
@@ -102,7 +130,7 @@ void readFile(){
 	string numberStr; // for single LongInt operation
 	string outputAns = "Answer of your computation"; // the answer you computed
 
-	ifstream inputFile("input.txt",ios::in);
+	ifstream inputFile("testinput.txt",ios::in);
 
 	LongInt li;
 
@@ -133,10 +161,15 @@ void readFile(){
 			li = points.addPoint(x, y);
 		}
 		else if(!command.compare("OT")){
+			int v1, v2, v3;
 			linestream >> numberStr;
-			linestream >> numberStr;			
+			v1 = atoi(numberStr.c_str());
+			linestream >> numberStr;	
+			v2 = atoi(numberStr.c_str());
 			linestream >> numberStr;
-			
+			v3 = atoi(numberStr.c_str());
+
+			triangles.makeTri(v1, v2, v3); // auto merge?
 		}
 		else if(!command.compare("IP")){
 			linestream >> numberStr;
@@ -155,8 +188,42 @@ void readFile(){
 
 void writeFile()
 {
+	ofstream outputFile("output.txt",ios::out);
+	if(outputFile.fail()){
+		cerr << "Error: Cannot create output file \"" << "output.txt" << "\"";
+		return;
+	}
 
+	int lineNbr = 0;
 
+	// Add all points to output file
+	for (int i = 1; i <= points.noPt(); i++)
+	{
+		string prefix = (lineNbr < 10) ? "000" :
+			(lineNbr < 100) ? "00" :
+			(lineNbr < 1000) ? "0" : "";
+
+		LongInt x, y;
+		int res = points.getPoint(i, x, y);
+		if (res != 1)
+			cout << "Error, wrong point index" << endl;
+		else
+		{
+			outputFile << prefix << lineNbr++ << ": AP " << x.toString() << " " << y.toString() << endl;
+		}
+	}
+
+	// Add all triangles to output file
+	for (int i = 0; i < triangles.noTri(); i++)
+	{
+		string prefix = (lineNbr < 10) ? "000" :
+			(lineNbr < 100) ? "00" :
+			(lineNbr < 1000) ? "0" : "";
+
+		int v1, v2, v3;
+		triangles.getVertexIdx(i << 3, v1, v2, v3);
+		outputFile << prefix << lineNbr++ << ": OT " << v1 << " " << v2 << " " << v3 << endl;
+	}
 }
 
 void keyboard (unsigned char key, int x, int y)
