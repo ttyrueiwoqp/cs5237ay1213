@@ -5,7 +5,6 @@
 #include "math.h"
 #include <iostream>
 #include <fstream>
-#include "GL\glut.h"
 #include <windows.h>
 #include <cstdio>
 #include <fstream>
@@ -13,6 +12,7 @@
 #include <string>
 #include <sstream>
 
+#include "GL\glut.h"
 using namespace std;
 
 PointSetArray points; // The points added by the user.
