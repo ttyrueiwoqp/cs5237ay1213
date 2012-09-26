@@ -1,3 +1,4 @@
+#include <iostream>
 #include "pointSetArray.h"
 
 using namespace std;
@@ -26,4 +27,37 @@ void PointSetArray::eraseAllPoints()
 {
 	points_x.clear();
 	points_y.clear();
+}
+
+void PointSetArray::print()
+{
+	static int LastPtSize = 0;
+	if(  LastPtSize != points_x.size() )
+	{
+		LastPtSize = points_x.size();
+		for( int i=0; i<points_x.size(); ++i )
+		{
+			LongInt x1 = points_x[i];
+			LongInt y1 = points_y[i];
+			std::cout<<"\nThe XY in string format ["<<i<<"] value is = ["<<x1.toString()<<", "<<y1.toString()<<"]";
+			std::cout<<"\nThe XY in double format ["<<i<<"] value is = ["<<x1.doubleValue()<<", "<<y1.doubleValue()<<"]";
+ 		}
+	}
+}
+
+void PointSetArray::eraseLastPoint()
+{
+	points_x.pop_back();
+	points_y.pop_back();
+}
+
+//check if the point exist return point_idx otherwise -1 
+int PointSetArray::checkPointExist(LongInt& x,LongInt& y)
+{
+	for( int i=0; i<points_x.size(); ++i)
+	{
+		if( points_x[i] == x && points_y[i] == y )
+			return i+1;
+	}
+	return -1;
 }

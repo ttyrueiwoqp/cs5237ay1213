@@ -465,6 +465,8 @@ double LongInt::doubleValue() {
 		result += num[i] * incr;
 		incr *= DIVIDER;
 	}
+	if( (nSign==-1) && result > 0.0) 
+		result = result * -1.0;
 	return result;
 }
 

@@ -1,6 +1,7 @@
 #ifndef TRISTH
 #define TRISTH
 
+#include <vector>
 
 /*
 
@@ -28,31 +29,29 @@ typedef  int FIndex; // The index of a triangle Hint: NOT a triangle if it's neg
                      // You should be able to make all the triangle indices to be from 0 to n - 1 (n = number of triangles)
 
 class Trist;
-
 class TriRecord {
 	protected:
 		int vi_[3];
 		OrTri fnext_[6];
-
+		bool valid;
 	friend Trist;
-};
+}; 
 
 
 
 
 class Trist {
-
 	protected:
-
 		int en_[6];
-
 
 	public:
 		Trist();
 		int noTri(); // return the number of triangles
+		int makeTri3(int triIdx, int pIndex1 );
 		int makeTri(int pIndex1,int pIndex2,int pIndex3,bool autoMerge = false); // Add a triangle into the Trist with the three point indices
 		// Moreover, automatically establish the fnext pointers to its neigbhours if autoMerge = true
 
+		void delTriPt(int ptIdx);
 		void delTri(OrTri); // Delete a triangle, but you can assume that this is ONLY used by the IP operation
 		                    // You may want to make sure all its neighbours are detached (below)
 		
@@ -60,11 +59,12 @@ class Trist {
 		OrTri sym(OrTri ef);
 		OrTri fnext(OrTri ef);
 
-		void getVertexIdx(OrTri, int& pIdx1,int& pIdx2,int& pIdx3); // return the three indices of the three vertices by OrTri
+		bool getVertexIdx(OrTri, int& pIdx1,int& pIdx2,int& pIdx3); // return the three indices of the three vertices by OrTri
 
 		int org(OrTri);  // the index of the first vertex of OrTri, e.g. org(bcd) => b
 		int dest(OrTri); // the index of the second vertex of OrTri, e.g. org(bcd) => c
 
+		void fmerge(TriRecord& abc);
 		void fmerge(OrTri abc, OrTri abd); // glue two neighbouring triangles, result abd = fnext(abc)
 		void fdetach(OrTri abc); // detach triangle abc with all its neighbours (undo fmerge)
 
@@ -73,7 +73,5 @@ class Trist {
 		                                                                 // Ignore this if you don't feel a need
 
 };
-
-
 
 #endif
