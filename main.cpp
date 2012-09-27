@@ -187,6 +187,10 @@ void readFile(){
 		return;
 	}
 
+	//Clear data trist records
+	triangles.clear();
+	points.eraseAllPoints();
+
 	while(inputFile.good()){
 		getline(inputFile,line);
 		if(line.empty()) {

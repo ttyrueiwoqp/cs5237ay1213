@@ -1,8 +1,10 @@
 #include <iostream>
+#include <math.h>
 #include "pointSetArray.h"
 
 using namespace std;
 
+const LongInt LI_Invalid("99999999999999999999999999999");
 // put the x,y values into x1,y1, and return 1 if the point pIndex exists
 int PointSetArray::getPoint (int pIndex, LongInt& x1,LongInt& y1)
 {
@@ -54,9 +56,12 @@ void PointSetArray::eraseLastPoint()
 //check if the point exist return point_idx otherwise -1 
 int PointSetArray::checkPointExist(LongInt& x,LongInt& y)
 {
+	const double C_Tolerance = 2.0;
 	for( int i=0; i<points_x.size(); ++i)
 	{
-		if( points_x[i] == x && points_y[i] == y )
+		LongInt dx = points_x[i]-x;  
+		LongInt dy = points_y[i]-y;
+		if( (fabs(dx.doubleValue()) < C_Tolerance) && (fabs(dy.doubleValue()) < C_Tolerance) )
 			return i+1;
 	}
 	return -1;

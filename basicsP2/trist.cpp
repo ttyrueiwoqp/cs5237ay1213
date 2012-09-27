@@ -15,14 +15,18 @@ Trist::Trist()
 	en_[3] = 5;
 	en_[4] = 3;
 	en_[5] = 4;
-
-	triangles.clear();
+	clear();
 }
 
 // return the number of triangles
 int Trist::noTri()
 {
 	return triangles.size();
+}
+
+void Trist::clear()
+{
+	triangles.clear();
 }
 
 int Trist::makeTri3(int triIdx, int pIndex1 )
@@ -180,7 +184,7 @@ void Trist::delTriPt(int ptIdx)
 {
 	int i, k;
 	int noOrTri; 
-	OrTri otList[3];
+	OrTri otList[10];
 	incidentTriangles(ptIdx, noOrTri, otList);
 	std::list<int> ptList;
 	//Extract the points that connected to ptIdx 
@@ -196,8 +200,7 @@ void Trist::delTriPt(int ptIdx)
 				if( tri.vi_[j] != ptIdx )
 					ptList.push_back( tri.vi_[j] );
 			}
-			//Delete triangle
-			delTri(otList[i]);
+			
 		}
 	}
 	ptList.sort();
@@ -211,6 +214,9 @@ void Trist::delTriPt(int ptIdx)
 		pts[1] = (*it); ++it;
 		pts[2] = (*it);
 
+		//Delete triangle
+		for(i=0; i<noOrTri; ++i)	delTri(otList[i]);
+	
 		//Look for triangle that previously deleted
 		for( i=0; i<triangles.size(); ++i )
 		{
@@ -227,10 +233,11 @@ void Trist::delTriPt(int ptIdx)
 					int k_v2 = (k_enext2<3)? tri.vi_[k_enext2]: tri.vi_[sym(k_enext2)];
 					int k_v3 = (k_enext3<3)? tri.vi_[k_enext3]: tri.vi_[sym(k_enext3)];
 
-					if( pts[0] == k_v1 && pts[0] == k_v2 && pts[0] == k_v3 )					
+					if( pts[0] == k_v1 && pts[1] == k_v2 && pts[2] == k_v3 )					
 					{
 						tri.valid = true;
 						this->fmerge(tri);
+						break;
 					}
 				}
 			}
@@ -249,9 +256,12 @@ void Trist::delTri(OrTri ottri)
 	for( int i=0; i<6; ++i)
 	{
 		OrTri fnextIdx = tri.fnext_[i];
-		triIdx = ottri>>3;
-		nVer = ottri & 7;
-		triangles[triIdx].fnext_[nVer] = -1;	
+		if(fnextIdx > -1 )
+		{
+			triIdx = fnextIdx>>3;
+			nVer = fnextIdx & 7;
+			triangles[triIdx].fnext_[nVer] = -1;	
+		}
 	}
 }
 
@@ -263,12 +273,15 @@ void Trist::incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList)
 	noOrTri = 0;
 	for(int i=0; i<triangles.size(); ++i )
 	{
-		if( (triangles[i].vi_[0] == ptIndex) || 
-			(triangles[i].vi_[1] == ptIndex) ||
-			(triangles[i].vi_[2] == ptIndex) )
+		if( triangles[i].valid )
 		{
-			otList[noOrTri] = i<<3;
-			noOrTri++;
+			if( (triangles[i].vi_[0] == ptIndex) || 
+				(triangles[i].vi_[1] == ptIndex) ||
+				(triangles[i].vi_[2] == ptIndex) )
+			{
+				otList[noOrTri] = i<<3;
+				noOrTri++;
+			}
 		}
 	}
 }
