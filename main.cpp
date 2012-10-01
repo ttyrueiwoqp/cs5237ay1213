@@ -240,7 +240,7 @@ void readFile(){
 
 void writeFile()
 {
-	ofstream outputFile("output.txt",ios::out);
+	ofstream outputFile("savefile.txt",ios::out);
 	if(outputFile.fail()){
 		cerr << "Error: Cannot create output file \"" << "output.txt" << "\"";
 		return;
@@ -384,7 +384,7 @@ int main(int argc, char **argv)
 	cout << "Right mouse click: OT operation"<<endl;
 	cout << "Q: Quit" <<endl;
 	cout << "R: Read in control points from \"input.txt\"" <<endl;
-	cout << "W: Write control points to \"input.txt\"" <<endl;
+	cout << "W: Write control points to \"savefile.txt\"" <<endl;
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize (WinWidth, WinHeight);
