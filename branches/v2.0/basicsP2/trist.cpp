@@ -98,7 +98,7 @@ void Trist::fmerge(OrTri abc, OrTri abd)
 		bool bOk = false;
 		for(k=0; k<6; ++k)
 		{
-			int k_enext1 = enext(k);;
+			int k_enext1 = enext(k);
 			int k_enext2 = enext(k_enext1);
 			int k_enext3 = enext(k_enext2);
 			int k_v1 = (k_enext1<3)? tri2.vi_[k_enext1]: tri2.vi_[sym(k_enext1)];
@@ -113,13 +113,27 @@ void Trist::fmerge(OrTri abc, OrTri abd)
 				break;
 			}
 		}
+		if (bOk)
+			break;
 	}
 }
 
 // detach triangle abc with all its neighbours (undo fmerge)
 void Trist::fdetach(OrTri abc)
 {
+	int triIdx = abc>>3;
+	TriRecord& tri = triangles[triIdx];
 
+	for( int i=0; i<6; ++i)
+	{
+		OrTri fnextIdx = tri.fnext_[i];
+		if(fnextIdx > -1 )
+		{
+			triIdx = fnextIdx>>3;
+			int nVer = fnextIdx & 7;
+			triangles[triIdx].fnext_[nVer] = -1;	
+		}
+	}
 }
 
 // Add a triangle into the Trist with the three point indices
@@ -249,20 +263,13 @@ void Trist::delTriPt(int ptIdx)
 // You may want to make sure all its neighbours are detached (below)
 void Trist::delTri(OrTri ottri) 
 {
-	int nVer;
 	int triIdx = ottri>>3;
 	TriRecord& tri = triangles[triIdx];
 	tri.valid = false;
-	for( int i=0; i<6; ++i)
-	{
-		OrTri fnextIdx = tri.fnext_[i];
-		if(fnextIdx > -1 )
-		{
-			triIdx = fnextIdx>>3;
-			nVer = fnextIdx & 7;
-			triangles[triIdx].fnext_[nVer] = -1;	
-		}
-	}
+
+	// Remove this triangle from being
+	// fnext of some other triangle
+	fdetach(ottri);
 }
 
 // A suggested function: you may want this function to return all the OrTri
@@ -306,9 +313,15 @@ OrTri Trist::sym(OrTri ef)
 }
 
 OrTri Trist::fnext(OrTri ef)
-{
-	// This is obviously wrong
-	return ef;
+{	
+	int tInx = ef >> 3;
+	int tVersion = ef & 7;
+
+	OrTri fnext = triangles[tInx].fnext_[tVersion];
+
+	// If the first edge of ef is not shared with an other
+	// triangle then ef is considered to be fnext of itself.
+	return (fnext > -1) ? fnext : ef;
 }
 
 // return the three indices of the three vertices by OrTri

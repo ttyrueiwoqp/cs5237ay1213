@@ -41,8 +41,8 @@ void PointSetArray::print()
 		{
 			LongInt x1 = points_x[i];
 			LongInt y1 = points_y[i];
-			std::cout<<"\nThe XY in string format ["<<i<<"] value is = ["<<x1.toString()<<", "<<y1.toString()<<"]";
-			std::cout<<"\nThe XY in double format ["<<i<<"] value is = ["<<x1.doubleValue()<<", "<<y1.doubleValue()<<"]";
+			//std::cout<<"\nThe XY in string format ["<<i<<"] value is = ["<<x1.toString()<<", "<<y1.toString()<<"]";
+			//std::cout<<"\nThe XY in double format ["<<i<<"] value is = ["<<x1.doubleValue()<<", "<<y1.doubleValue()<<"]";
  		}
 	}
 }
