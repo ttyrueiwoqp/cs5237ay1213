@@ -149,6 +149,43 @@ void display(void)
 	glutSwapBuffers();
 }
 
+void processIP(LongInt x, LongInt y)
+{
+	bool bInTri = false;
+	int ptIdx = points.checkPointExist(x, y);
+	if( ptIdx < 1 )
+	{
+		int PtSz = points.addPoint(x, y); // add the point to the list of points
+		// Iterator thru' all triangles to check for intri
+		for ( int i = 0; i < triangles.noTri(); i++)
+		{
+			int v1, v2, v3, v4;
+			v4 = PtSz;
+			if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
+			{
+				//Click inside one of the triangles
+				if( PointSet::inTri(v1, v2, v3, v4) == 1 )
+				{
+					bInTri = true;
+				//	points.print();
+					triangles.makeTri3(i, v4);
+					break;
+				}
+			}
+		}
+		//Click outside all the triangles, so remove the last point
+		if( bInTri == false )
+		{
+			points.eraseLastPoint();
+		}
+	}
+	else
+	{
+		//remove the points and the triangles that connected
+		triangles.delTriPt(ptIdx);
+	}
+}
+
 void reshape (int w, int h)
 {
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
@@ -225,8 +262,12 @@ void readFile(){
 		}
 		else if(!command.compare("IP")){
 			linestream >> numberStr;
+			LongInt x, y;
+			x = LongInt(numberStr);
 			linestream >> numberStr;
+			y = LongInt(numberStr);
 
+			processIP(x, y);
 		}
 		else if(!command.compare("DY")){ 
 			linestream >> numberStr;
@@ -318,7 +359,6 @@ void keyboard (unsigned char key, int x, int y)
 }
 
 
-
 void mouse(int button, int state, int x, int y)
 {
 	/*button: GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, or GLUT_RIGHT_BUTTON */
@@ -333,49 +373,15 @@ void mouse(int button, int state, int x, int y)
 	};
 	if((button == MOUSE_RIGHT_BUTTON)&&(state == GLUT_UP))
 	{
-		bool bInTri = false;
-
 #if T2C
 		x -= HalfWinWidth;
 		y -= HalfWinHeight;
 		x /= scaleVal;
 		y /= scaleVal;
 #endif
-		int ptIdx = points.checkPointExist( LongInt(x), LongInt(y) );
-		if( ptIdx < 1 )
-		{
-			int PtSz = points.addPoint(LongInt(x), LongInt(y)); // add the point to the list of points
-			// Iterator thru' all triangles to check for intri
-			for ( int i = 0; i < triangles.noTri(); i++)
-			{
-				int v1, v2, v3, v4;
-				v4 = PtSz;
-				// How can I get a proper OpTri from here? i<< 3 looks wrong.
-				if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
-				{
-					//Click outside in one of the triangle
-					if( PointSet::inTri(v1, v2, v3, v4) == 1 )
-					{
-						bInTri = true;
-						points.print();
-						triangles.makeTri3(i, v4);
-						break;
-					}
-				}
-			}
-			//Click outside all the triangles, so remove the last point
-			if( bInTri == false )
-			{
-				points.eraseLastPoint();
-			}
-		}
-		else
-		{
-			//remove the points and the triangles that connected
-			triangles.delTriPt(ptIdx);
-		}
+		processIP(LongInt(x), LongInt(y));
+		glutPostRedisplay();
 	}
-	glutPostRedisplay();
 }
 
 int main(int argc, char **argv)
