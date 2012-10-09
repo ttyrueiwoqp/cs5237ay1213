@@ -340,16 +340,16 @@ void keyboard (unsigned char key, int x, int y)
 			break;
 
 		case '+':
-			scaleVal += 0.1;
+			scaleVal += (float)0.1;
 			break;
 
 		case '-':
 			if( scaleVal > 0.1 ) 
-				scaleVal -= 0.1;
+				scaleVal -= (float)0.1;
 			break;
 
 		case '.':
-			scaleVal = 1.0;
+			scaleVal = (float)1.0;
 			break;
 		default:
 			break;

@@ -37,7 +37,7 @@ void PointSetArray::print()
 	if(  LastPtSize != points_x.size() )
 	{
 		LastPtSize = points_x.size();
-		for( int i=0; i<points_x.size(); ++i )
+		for( unsigned int i=0; i<points_x.size(); ++i )
 		{
 			LongInt x1 = points_x[i];
 			LongInt y1 = points_y[i];
@@ -57,7 +57,7 @@ void PointSetArray::eraseLastPoint()
 int PointSetArray::checkPointExist(LongInt& x,LongInt& y)
 {
 	const double C_Tolerance = 2.0;
-	for( int i=0; i<points_x.size(); ++i)
+	for( unsigned int i=0; i<points_x.size(); ++i)
 	{
 		LongInt dx = points_x[i]-x;  
 		LongInt dy = points_y[i]-y;
