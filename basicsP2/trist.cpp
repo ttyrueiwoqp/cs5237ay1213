@@ -205,7 +205,7 @@ void Trist::delTriPt(int ptIdx)
 	for(i=0; i<noOrTri; ++i )
 	{ 
 		int triIdx = otList[i]>>3;
-		if( triIdx < triangles.size() )
+		if( triIdx < (int)triangles.size() )
 		{
 			TriRecord tri = triangles[triIdx];
 			tri.valid = false;
@@ -232,7 +232,7 @@ void Trist::delTriPt(int ptIdx)
 		for(i=0; i<noOrTri; ++i)	delTri(otList[i]);
 	
 		//Look for triangle that previously deleted
-		for( i=0; i<triangles.size(); ++i )
+		for( i=0; i<(int)triangles.size(); ++i )
 		{
 			TriRecord& tri = triangles[i];
 			if( !tri.valid )
@@ -278,7 +278,7 @@ void Trist::delTri(OrTri ottri)
 void Trist::incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList)
 {
 	noOrTri = 0;
-	for(int i=0; i<triangles.size(); ++i )
+	for(unsigned int i=0; i<triangles.size(); ++i )
 	{
 		if( triangles[i].valid )
 		{
