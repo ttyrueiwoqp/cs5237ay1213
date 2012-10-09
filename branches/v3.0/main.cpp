@@ -121,14 +121,18 @@ void display(void)
 	for ( int i = 0; i < triangles.noTri(); i++)
 	{
 		int v1, v2, v3;
-
-		// How can I get a proper OpTri from here? i<< 3 looks wrong.
 		if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
 		{
 			LongInt x1, y1, x2, y2, x3, y3;
 			int res1 = points.getPoint(v1, x1, y1);
 			int res2 = points.getPoint(v2, x2, y2);
 			int res3 = points.getPoint(v3, x3, y3);
+
+			// Ignore dummy helper points
+			if ( (y1 < -0x7FFFFFFE || y1 > 0x7FFFFFFE) ||
+				(y2 < -0x7FFFFFFE || y2 > 0x7FFFFFFE) ||
+				(y3 < -0x7FFFFFFE || y3 > 0x7FFFFFFE) )
+				continue;
 
 			if (res1 != 1 || res2 != 1 || res3 != 1)
 				cout << "Error, wrong triangle point index" << endl;
@@ -151,13 +155,8 @@ void display(void)
 
 void processIP(LongInt x, LongInt y)
 {
-	// Add the point to the array of points
-	points.addPoint(x, y);
-	
-	/*
-	bool bInTri = false;
 	int ptIdx = points.checkPointExist(x, y);
-	if( ptIdx < 1 )
+	if( ptIdx < 1 ) // only add the point if it does not exist already
 	{
 		int PtSz = points.addPoint(x, y); // add the point to the list of points
 		// Iterator thru' all triangles to check for intri
@@ -170,24 +169,13 @@ void processIP(LongInt x, LongInt y)
 				//Click inside one of the triangles
 				if( PointSet::inTri(v1, v2, v3, v4) == 1 )
 				{
-					bInTri = true;
 				//	points.print();
 					triangles.makeTri3(i, v4);
 					break;
 				}
 			}
 		}
-		//Click outside all the triangles, so remove the last point
-		if( bInTri == false )
-		{
-			points.eraseLastPoint();
-		}
 	}
-	else
-	{
-		//remove the points and the triangles that connected
-		triangles.delTriPt(ptIdx);
-	} */
 }
 
 void reshape (int w, int h)
@@ -227,11 +215,6 @@ void readFile(){
 		cerr << "Error: Cannot read input file \"" << "input.txt" << "\"";
 		return;
 	}
-
-	//Clear data trist records
-	triangles.clear();
-	points.eraseAllPoints();
-
 	while(inputFile.good()){
 		getline(inputFile,line);
 		if(line.empty()) {
@@ -379,6 +362,15 @@ int main(int argc, char **argv)
 	cout << "C: Compute Delaunay triangulation" << endl;
 	cout << "W: Write control points to \"savefile.txt\"" <<endl;
 	cout << "Q: Quit" <<endl;
+
+	// Add one big triangle to start splitting in.
+	triangles.clear();
+	points.eraseAllPoints();
+	int v1 = points.addPoint(LongInt(-0x7FFFFFFF), LongInt(0x7FFFFFFF));
+	int v2 = points.addPoint(LongInt(0x7FFFFFFF), LongInt(0x7FFFFFFF));
+	int v3 = points.addPoint(LongInt(0), LongInt(-0x7FFFFFFF));
+	triangles.makeTri(v1, v2, v3);
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize (WinWidth, WinHeight);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="basics"
 	ProjectGUID="{5C55D83E-9C8C-43C9-A5FD-079D266ABBF1}"
 	Keyword="MFCProj"
