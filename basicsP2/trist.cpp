@@ -29,20 +29,18 @@ void Trist::clear()
 	triangles.clear();
 }
 
-int Trist::makeTri3(int triIdx, int pIndex1 )
+int Trist::makeTri3(int triIdx, int pIndex1, int* idxArr )
 {
 	int i, j;
-	int idxArr[3];
 
 	TriRecord oldTri;
-	//triIdx;
+
 	oldTri = triangles[triIdx];
 	idxArr[0] = makeTri(oldTri.vi_[0], oldTri.vi_[1], pIndex1, false);
 	idxArr[1] = makeTri(oldTri.vi_[0], oldTri.vi_[2], pIndex1, false);
 	idxArr[2] = makeTri(oldTri.vi_[1], oldTri.vi_[2], pIndex1, false);
 	triangles[triIdx].valid = false;
 
-#if 1
 	for(i=0; i<6; ++i)
 	{
 		OrTri orIdx = oldTri.fnext_[i];
@@ -66,13 +64,10 @@ int Trist::makeTri3(int triIdx, int pIndex1 )
 			}
 		}
 	}
-	for(i=1; i<3; ++i)
-		fmerge( idxArr[0]<<3, idxArr[i]<<3);
-#else
-	fmerge(triangles[ idxArr[0] ]);
-	fmerge(triangles[ idxArr[1] ]);
-	fmerge(triangles[ idxArr[2] ]);
-#endif
+
+	fmerge( idxArr[0]<<3, idxArr[1]<<3);
+	fmerge( idxArr[0]<<3, idxArr[2]<<3);
+	fmerge( idxArr[1]<<3, idxArr[2]<<3);
 	return noTri();
 }
 
@@ -272,9 +267,7 @@ void Trist::delTri(OrTri ottri)
 	fdetach(ottri);
 }
 
-// A suggested function: you may want this function to return all the OrTri
-// that are incident to this point
-// Ignore this if you don't feel a need
+// Return all the OrTri that are incident to this point.
 void Trist::incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList)
 {
 	noOrTri = 0;
@@ -290,6 +283,18 @@ void Trist::incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList)
 				noOrTri++;
 			}
 		}
+	}
+}
+
+void Trist::adjacentTriangles(int tIndex, int& noTri, int* triList)
+{
+	noTri = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		OrTri nextTri = triangles[tIndex].fnext_[i];
+		int next = (nextTri >> 3);
+		if (next >= 0 && triangles[next].valid)
+			triList[noTri++] = next;
 	}
 }
 
@@ -310,18 +315,6 @@ OrTri Trist::sym(OrTri ef)
 
 	tVersion = (tVersion + 3) % 6; // find the symmetric version
 	return (tInx << 3) | tVersion;
-}
-
-OrTri Trist::fnext(OrTri ef)
-{	
-	int tInx = ef >> 3;
-	int tVersion = ef & 7;
-
-	OrTri fnext = triangles[tInx].fnext_[tVersion];
-
-	// If the first edge of ef is not shared with an other
-	// triangle then ef is considered to be fnext of itself.
-	return (fnext > -1) ? fnext : ef;
 }
 
 // return the three indices of the three vertices by OrTri
