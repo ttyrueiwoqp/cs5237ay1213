@@ -103,8 +103,8 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
 
-	//print all points
-	points.print();
+	// DEBUG: print all points
+	//points.print();
 
 	// Draw all points
 	for (int i = 1; i <= points.noPt(); i++)
@@ -151,6 +151,10 @@ void display(void)
 
 void processIP(LongInt x, LongInt y)
 {
+	// Add the point to the array of points
+	points.addPoint(x, y);
+	
+	/*
 	bool bInTri = false;
 	int ptIdx = points.checkPointExist(x, y);
 	if( ptIdx < 1 )
@@ -183,7 +187,7 @@ void processIP(LongInt x, LongInt y)
 	{
 		//remove the points and the triangles that connected
 		triangles.delTriPt(ptIdx);
-	}
+	} */
 }
 
 void reshape (int w, int h)
@@ -240,40 +244,28 @@ void readFile(){
 		linestream >> line_noStr;
 		linestream >> command;         // get the command
 
-		if(!command.compare("AP")){
+		if(!command.compare("IP")){
 			linestream >> numberStr;
 			LongInt x, y;
 			x = LongInt(numberStr);
 			linestream >> numberStr;
 			y = LongInt(numberStr);
 
-			li = points.addPoint(x, y);
-		}
-		else if(!command.compare("OT")){
-			int v1, v2, v3;
-			linestream >> numberStr;
-			v1 = atoi(numberStr.c_str());
-			linestream >> numberStr;	
-			v2 = atoi(numberStr.c_str());
-			linestream >> numberStr;
-			v3 = atoi(numberStr.c_str());
-
-			triangles.makeTri(v1, v2, v3, true);
-		}
-		else if(!command.compare("IP")){
-			linestream >> numberStr;
-			LongInt x, y;
-			x = LongInt(numberStr);
-			linestream >> numberStr;
-			y = LongInt(numberStr);
-
+			// DEBUG
+			cout << "input point: " << x.toString() << " " << y.toString() << endl;
 			processIP(x, y);
 		}
-		else if(!command.compare("DY")){ 
+		else if(!command.compare("DY")){
+			// TODO: Implement delay functionality
 			linestream >> numberStr;
+			cout << "TODO: Implement delay: " << numberStr << endl;
+		}
+		else if(!command.compare("CD")){
+			// TODO: Compute Delaunay triangulation
+			cout << "CD command" << endl;
 		}
 		else{
-			cerr << "Exception: Wrong input command" << endl;
+			cerr << "Exception: Wrong input command: " << command << endl;
 		}
 	}
 
@@ -301,24 +293,14 @@ void writeFile()
 		if (res != 1)
 			cout << "Error, wrong point index" << endl;
 		else
-		{
-			outputFile << prefix << lineNbr++ << ": AP " << x.toString() << " " << y.toString() << endl;
-		}
+			outputFile << prefix << lineNbr++ << ": IP " << x.toString() << " " << y.toString() << endl;
 	}
 
-	// Add all triangles to output file
-	for (int i = 0; i < triangles.noTri(); i++)
-	{
-		string prefix = (lineNbr < 10) ? "000" :
-			(lineNbr < 100) ? "00" :
-			(lineNbr < 1000) ? "0" : "";
-
-		int v1, v2, v3;	
-		if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
-		{
-			outputFile << prefix << lineNbr++ << ": OT " << v1 << " " << v2 << " " << v3 << endl;
-		}
-	}
+	// Add CD command at the end
+	string prefix = (lineNbr < 10) ? "000" :
+		(lineNbr < 100) ? "00" :
+		(lineNbr < 1000) ? "0" : "";
+	outputFile << prefix << lineNbr++ << ": CD" << endl;
 }
 
 void keyboard (unsigned char key, int x, int y)
@@ -337,6 +319,11 @@ void keyboard (unsigned char key, int x, int y)
 		case 'Q':
 		case 'q':
 			exit(0);
+			break;
+
+		case 'c':
+		case 'C':
+			cout << "TODO: Compute Delaunay triangulation" << endl;
 			break;
 
 		case '+':
@@ -386,11 +373,12 @@ void mouse(int button, int state, int x, int y)
 
 int main(int argc, char **argv)
 {
-	cout<<"CS5237 Phase II"<< endl<< endl;
-	cout << "Right mouse click: OT operation"<<endl;
-	cout << "Q: Quit" <<endl;
+	cout << "CS5237 Phase III"<< endl<< endl;
+	cout << "Right mouse click: Insert point"<<endl;
 	cout << "R: Read in control points from \"input.txt\"" <<endl;
+	cout << "C: Compute Delaunay triangulation" << endl;
 	cout << "W: Write control points to \"savefile.txt\"" <<endl;
+	cout << "Q: Quit" <<endl;
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize (WinWidth, WinHeight);
