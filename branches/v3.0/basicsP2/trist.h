@@ -47,7 +47,7 @@ class Trist {
 	public:
 		Trist();
 		int noTri(); // return the number of triangles
-		int makeTri3(int triIdx, int pIndex1 );
+		int makeTri3(int triIdx, int pIndex1, int* idxArr );
 		int makeTri(int pIndex1,int pIndex2,int pIndex3,bool autoMerge = false); // Add a triangle into the Trist with the three point indices
 		// Moreover, automatically establish the fnext pointers to its neigbhours if autoMerge = true
 
@@ -57,7 +57,6 @@ class Trist {
 		
 		OrTri enext(OrTri ef);
 		OrTri sym(OrTri ef);
-		OrTri fnext(OrTri ef);
 
 		void clear();
 		bool getVertexIdx(OrTri, int& pIdx1,int& pIdx2,int& pIdx3); // return the three indices of the three vertices by OrTri
@@ -69,10 +68,8 @@ class Trist {
 		void fmerge(OrTri abc, OrTri abd); // glue two neighbouring triangles, result abd = fnext(abc)
 		void fdetach(OrTri abc); // detach triangle abc with all its neighbours (undo fmerge)
 
-		void incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList); // A suggested function: you may want this function to return all the OrTri
-		                                                                 // that are incident to this point
-		                                                                 // Ignore this if you don't feel a need
-
+		void incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList); //Return all the OrTri that are incident to this point
+		void adjacentTriangles(int tIndex, int& noTri, int* triList);
 };
 
 #endif
