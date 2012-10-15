@@ -30,6 +30,13 @@ typedef  int FIndex; // The index of a triangle Hint: NOT a triangle if it's neg
 
 class Trist;
 class TriRecord {
+public:	
+	bool getVertexes(int& v1, int& v2, int& v3){
+		v1 = vi_[0];
+		v2 = vi_[1];
+		v3 = vi_[2];
+		return valid;
+	}
 	protected:
 		int vi_[3];
 		OrTri fnext_[6];
@@ -70,6 +77,7 @@ class Trist {
 
 		void incidentTriangles(int ptIndex,int& noOrTri, OrTri* otList); //Return all the OrTri that are incident to this point
 		void adjacentTriangles(int tIndex, int& noTri, int* triList);
+		std::vector<TriRecord> getTriangles();
 };
 
 #endif

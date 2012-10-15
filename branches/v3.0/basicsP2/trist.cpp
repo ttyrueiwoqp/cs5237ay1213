@@ -359,3 +359,7 @@ int Trist::dest(OrTri tri)
 		triangles[tInx].vi_[tVersion -3];
 }
 
+std::vector<TriRecord> Trist::getTriangles()
+{
+	return triangles;
+}
