@@ -139,7 +139,7 @@ void intervalTimer (int i)
 	intervalTimerCalls++;
 	if ( (intervalTimerCalls % 10) == 0) { 
 		sprintf(message[11],"IP[x,y]: %d, %d", (int)ip_x, (int)ip_y);
-		sprintf(message[12],"DY[in msec]: %d", (int)(delay * timerDelay));
+		sprintf(message[12],"DY[in msec]: %d", (int)delay);
 		sprintf(message[13],"Zoom[%%]: %d %%", (int)((scaleVal/1.0)*100));
 		sprintf(message[14],"CD[On|Off]: %s", bCompDel? "On": "Off");
 		sprintf(message[15],"Animation[On|Off]: %s", bAnimate? "On": "Off");
@@ -154,8 +154,8 @@ void intervalTimer (int i)
 		glutPostRedisplay(); 
 	}
 
-	const int delayDYCnt = (int)(delay * timerDelay);
-	if ( ((intervalTimerCalls % /*delayDYCnt*/10) == 0) && bAnimate && aniState.start)
+	const int delayDYCnt = (int)(delay / timerDelay);
+	if ( ((intervalTimerCalls % delayDYCnt) == 0) && bAnimate && aniState.start)
 	{
 		//Start animation here
 		animateCD();
@@ -176,92 +176,54 @@ void drawTrist()
 {
 	static int s_counter = 0;
 	glPushMatrix();
-	if(bAnimate && aniState.state>0)
+	if(bAnimate && aniState.state == 1)
 	{
-		// Draw all triangles
-			// Draw all triangles
-		for ( int i = 0; i < triangles.noTri(); i++)
-		{
-			int v1, v2, v3;
-			if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
-			{
-				LongInt x1, y1, x2, y2, x3, y3;
-				int res1 = points.getPoint(v1, x1, y1);
-				int res2 = points.getPoint(v2, x2, y2);
-				int res3 = points.getPoint(v3, x3, y3);
+		LongInt x1, y1, x2, y2, x3, y3;
+		int res1 = points.getPoint(aniState.toTri[0][0], x1, y1);
+		int res2 = points.getPoint(aniState.toTri[0][1], x2, y2);
+		int res3 = points.getPoint(aniState.toTri[0][2], x3, y3);
+		drawATriangle(x1.doubleValue(), y1.doubleValue(),
+					x2.doubleValue(), y2.doubleValue(),
+					x3.doubleValue(), y3.doubleValue(), aniState.start);
+		res1 = points.getPoint(aniState.toTri[1][0], x1, y1);
+		res2 = points.getPoint(aniState.toTri[1][1], x2, y2);
+		res3 = points.getPoint(aniState.toTri[1][2], x3, y3);
+		drawATriangle(x1.doubleValue(), y1.doubleValue(),
+					x2.doubleValue(), y2.doubleValue(),
+					x3.doubleValue(), y3.doubleValue(), aniState.start);
+		aniState.state=0;
+		aniState.loop++;
+	}
 
-				// Ignore dummy helper points
-				if ( (y1 < -(INF-1) || y1 > (INF-1)) ||
-					(y2 < -(INF-1) || y2 > (INF-1)) ||
-					(y3 < -(INF-1) || y3 > (INF-1)) )
-					continue;
-
-				if (res1 != 1 || res2 != 1 || res3 != 1)
-					cout << "Error, wrong triangle point index" << endl;
-				else
-				{
-					drawATriangle(x1.doubleValue(), y1.doubleValue(),
-						x2.doubleValue(), y2.doubleValue(),
-						x3.doubleValue(), y3.doubleValue(), aniState.start);
-
-					// Draw triangle outline
-					drawALine(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
-					drawALine(x2.doubleValue(), y2.doubleValue(), x3.doubleValue(), y3.doubleValue());
-					drawALine(x3.doubleValue(), y3.doubleValue(), x1.doubleValue(), y1.doubleValue());
-				}
-			}
-		}
-		if(aniState.state==1)
+	// Draw all triangles
+	for ( int i = 0; i < triangles.noTri(); i++)
+	{
+		int v1, v2, v3;
+		if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
 		{
 			LongInt x1, y1, x2, y2, x3, y3;
-			int res1 = points.getPoint(aniState.toTri[0][0], x1, y1);
-			int res2 = points.getPoint(aniState.toTri[0][1], x2, y2);
-			int res3 = points.getPoint(aniState.toTri[0][2], x3, y3);
-			drawATriangle(x1.doubleValue(), y1.doubleValue(),
-						x2.doubleValue(), y2.doubleValue(),
-						x3.doubleValue(), y3.doubleValue(), aniState.start);
-			res1 = points.getPoint(aniState.toTri[1][0], x1, y1);
-			res2 = points.getPoint(aniState.toTri[1][1], x2, y2);
-			res3 = points.getPoint(aniState.toTri[1][2], x3, y3);
-			drawATriangle(x1.doubleValue(), y1.doubleValue(),
-						x2.doubleValue(), y2.doubleValue(),
-						x3.doubleValue(), y3.doubleValue(), aniState.start);
-			aniState.state=0;
-			aniState.loop++;
-		}
-	}
-	else
-	{
-		// Draw all triangles
-		for ( int i = 0; i < triangles.noTri(); i++)
-		{
-			int v1, v2, v3;
-			if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
+			int res1 = points.getPoint(v1, x1, y1);
+			int res2 = points.getPoint(v2, x2, y2);
+			int res3 = points.getPoint(v3, x3, y3);
+
+			// Ignore dummy helper points
+			if ( (y1 < -(INF-1) || y1 > (INF-1)) ||
+				(y2 < -(INF-1) || y2 > (INF-1)) ||
+				(y3 < -(INF-1) || y3 > (INF-1)) )
+				continue;
+
+			if (res1 != 1 || res2 != 1 || res3 != 1)
+				cerr << "Error, wrong triangle point index" << endl;
+			else
 			{
-				LongInt x1, y1, x2, y2, x3, y3;
-				int res1 = points.getPoint(v1, x1, y1);
-				int res2 = points.getPoint(v2, x2, y2);
-				int res3 = points.getPoint(v3, x3, y3);
+				drawATriangle(x1.doubleValue(), y1.doubleValue(),
+					x2.doubleValue(), y2.doubleValue(),
+					x3.doubleValue(), y3.doubleValue(), aniState.start);
 
-				// Ignore dummy helper points
-				if ( (y1 < -(INF-1) || y1 > (INF-1)) ||
-					(y2 < -(INF-1) || y2 > (INF-1)) ||
-					(y3 < -(INF-1) || y3 > (INF-1)) )
-					continue;
-
-				if (res1 != 1 || res2 != 1 || res3 != 1)
-					cout << "Error, wrong triangle point index" << endl;
-				else
-				{
-					drawATriangle(x1.doubleValue(), y1.doubleValue(),
-						x2.doubleValue(), y2.doubleValue(),
-						x3.doubleValue(), y3.doubleValue(), aniState.start);
-
-					// Draw triangle outline
-					drawALine(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
-					drawALine(x2.doubleValue(), y2.doubleValue(), x3.doubleValue(), y3.doubleValue());
-					drawALine(x3.doubleValue(), y3.doubleValue(), x1.doubleValue(), y1.doubleValue());
-				}
+				// Draw triangle outline
+				drawALine(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
+				drawALine(x2.doubleValue(), y2.doubleValue(), x3.doubleValue(), y3.doubleValue());
+				drawALine(x3.doubleValue(), y3.doubleValue(), x1.doubleValue(), y1.doubleValue());
 			}
 		}
 	}
@@ -329,12 +291,10 @@ void readFile(){
 			processIP(x, y);
 		}
 		else if(!command.compare("DY")){
-			// TODO: Implement delay functionality
 			linestream >> numberStr;
 			LongInt dy;
 			dy = LongInt(numberStr);
-			delay = (int)(dy.doubleValue());
-			cout << "TODO: Implement delay: " << numberStr << endl;
+			delay = (int)(dy.doubleValue()) * 1000;
 		}
 		else if(!command.compare("CD")){
 			processCD();
@@ -343,7 +303,6 @@ void readFile(){
 			cerr << "Exception: Wrong input command: " << command << endl;
 		}
 	}
-
 }
 
 void writeFile()
@@ -499,7 +458,6 @@ int main(int  argc, char *argv[])
 	glutReshapeFunc(resizeData);
 	glutDisplayFunc(drawData); 
 
-	// 
 	initTextList();  // create character display list
 	glutSetWindow(playWindow);
 	glutMainLoop();
@@ -567,48 +525,50 @@ void processIP(LongInt x, LongInt y)
 	ip_y = y.doubleValue();
 }
 
+void buildTriangulation(int curPoint)
+{
+	// Iterator thru' all triangles to check for intri
+	for ( int i = 0; i < triangles.noTri(); i++)
+	{
+		int v1, v2, v3, v4;
+		v4 = curPoint;
+		if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
+		{
+			//Click inside one of the triangles
+			if( PointSet::inTri(v1, v2, v3, v4) == 1 )
+			{
+				int idxArr[3]; // Indices to the new triangles
+				triangles.makeTri3(i, v4, &idxArr[0]);
+				//Flip edges if necessary
+				makeEdgesLD(&idxArr[0], v4);
+				break;
+			}
+		}
+	}
+}
+
 void animateCD()
 {
 	if(bAnimate && aniState.start)
 	{
-		while(aniState.state==0)
+		if(aniState.j <= points.noPt())
 		{
-			if(aniState.j <= points.noPt())
-			{
-				// Iterator thru' all triangles to check for intri
-				for ( int i = 0; i < triangles.noTri(); i++)
-				{
-					int v1, v2, v3, v4;
-					v4 = aniState.j;
-					if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
-					{
-						//Click inside one of the triangles
-						if( PointSet::inTri(v1, v2, v3, v4) == 1 )
-						{
-							int idxArr[3]; // Indices to the new triangles
-							triangles.makeTri3(i, v4, &idxArr[0]);
-							//Flip edges if necessary
-							makeEdgesLD(&idxArr[0], v4);
-							break;
-						}
-					}
-				}
-				aniState.j++;
-			}
-			else
-			{
-				SYSTEMTIME st;
-				aniState.start = false;
-				aniState.bDone = true;
-				aniState.loop = 0;
-				GetLocalTime(&st);
-				aniState.stopTm = (((st.wHour*60+st.wMinute)*60)+st.wSecond)*1000+st.wMilliseconds; 
-				cerr << "End: " << aniState.stopTm << endl;
-				cerr << "Elapsed Time(ms): " << aniState.stopTm-aniState.startTm << endl;
-				compCDTime = (aniState.stopTm-aniState.startTm);
-				scaleVal = aniState.scale;
-				return;
-			}
+			buildTriangulation(aniState.j);
+			aniState.j++;
+		}
+		else
+		{
+			SYSTEMTIME st;
+			aniState.start = false;
+			aniState.bDone = true;
+			aniState.loop = 0;
+			GetLocalTime(&st);
+			aniState.stopTm = (((st.wHour*60+st.wMinute)*60)+st.wSecond)*1000+st.wMilliseconds; 
+			cerr << "End: " << aniState.stopTm << endl;
+			cerr << "Elapsed Time(ms): " << aniState.stopTm-aniState.startTm << endl;
+			compCDTime = (aniState.stopTm-aniState.startTm);
+			scaleVal = aniState.scale;
+			return;
 		}
 	}
 }
@@ -619,34 +579,14 @@ void processCD()
 	GetLocalTime(&st);
 	int start = (((st.wHour*60+st.wMinute)*60)+st.wSecond)*1000+st.wMilliseconds; cerr << "Start: " << start << endl;
 
-	// Is there a need to scramble the points?
-	// I assume here that their order is already random enough
 	if( !bAnimate )
 	{
 		triangles.clear();
 		// Add "dummy" big triangle
 		triangles.makeTri(1, 2, 3);
 		for (int j = 4; j <= points.noPt(); j++)
-		{
-			// Iterator thru' all triangles to check for intri
-			for ( int i = 0; i < triangles.noTri(); i++)
-			{
-				int v1, v2, v3, v4;
-				v4 = j;
-				if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
-				{
-					//Click inside one of the triangles
-					if( PointSet::inTri(v1, v2, v3, v4) == 1 )
-					{
-						int idxArr[3]; // Indices to the new triangles
-						triangles.makeTri3(i, v4, &idxArr[0]);
-						//Flip edges if necessary
-						makeEdgesLD(&idxArr[0], v4);
-						break;
-					}
-				}
-			}	
-		}
+			buildTriangulation(j);
+
 		GetLocalTime(&st);
 		int end = (((st.wHour*60+st.wMinute)*60)+st.wSecond)*1000+st.wMilliseconds; cerr << "End: " << end << endl;
 		cerr << "Elapsed Time(ms): " << end-start << endl;
@@ -707,14 +647,12 @@ void makeEdgesLD(int* idxArr, int pIdx)
 
 				if(bAnimate)
 				{
-					triangles.getVertexIdx(adjTri[j] << 3, v[0], v[1], v[2]);
 					aniState.fromTri[0][0] = v[0];
 					aniState.fromTri[0][1] = v[1];
 					aniState.fromTri[0][2] = v[2];
-					triangles.getVertexIdx(idxArr[i] << 3, v[0], v[1], v[2]);
-					aniState.fromTri[1][0] = v[0];
-					aniState.fromTri[1][1] = v[1];
-					aniState.fromTri[1][2] = v[2];
+					aniState.fromTri[1][0] = w[0];
+					aniState.fromTri[1][1] = w[1];
+					aniState.fromTri[1][2] = w[2];
 					aniState.toTri[0][0] = pIdx;
 					aniState.toTri[0][1] = v[connectToP];
 					aniState.toTri[0][2] = v[(connectToP+1)%3];
@@ -723,16 +661,13 @@ void makeEdgesLD(int* idxArr, int pIdx)
 					aniState.toTri[1][2] = v[(connectToP+2)%3];
 					aniState.state = 1;
 				}
-				else
-				{
-					// Remove the old triangles
-					triangles.delTri(adjTri[j] << 3);
-					triangles.delTri(idxArr[i] << 3);
+				// Remove the old triangles
+				triangles.delTri(adjTri[j] << 3);
+				triangles.delTri(idxArr[i] << 3);
 
-					// Add the new triangles
-					triangles.makeTri(pIdx, v[connectToP], v[(connectToP+1)%3], true);
-					triangles.makeTri(pIdx, v[connectToP], v[(connectToP+2)%3], true);
-				}
+				// Add the new triangles
+				triangles.makeTri(pIdx, v[connectToP], v[(connectToP+1)%3], true);
+				triangles.makeTri(pIdx, v[connectToP], v[(connectToP+2)%3], true);
 			}
 		}
 	}
@@ -808,6 +743,7 @@ void drawATriangle(double x1,double y1, double x2, double y2, double x3, double 
 {
 	glBegin(GL_POLYGON);
 
+	randomColor = false;
 	if(randomColor)
 	{
 		//to set random color for all triangle
