@@ -7,6 +7,7 @@
 #include <strstream>
 #include <string>
 #include <sstream>
+#include <queue>
 #include "GL\glut.h"
 #include "basicsP2\pointSetArray.h"
 #include "basicsP2\Trist.h"
@@ -59,7 +60,7 @@ unsigned int compCDTime = 0;
 
 //Function for computation
 void processIP(LongInt x, LongInt y);
-void makeEdgesLD(int* idxArr, int pIdx);
+void makeEdgesLD(queue<int>& idxArr, int pIdx);
 void processCD();
 void animateCD();
 
@@ -530,17 +531,19 @@ void buildTriangulation(int curPoint)
 	// Iterator thru' all triangles to check for intri
 	for ( int i = 0; i < triangles.noTri(); i++)
 	{
-		int v1, v2, v3, v4;
-		v4 = curPoint;
+		int v1, v2, v3;
 		if( triangles.getVertexIdx(i << 3, v1, v2, v3) )
 		{
 			//Click inside one of the triangles
-			if( PointSet::inTri(v1, v2, v3, v4) == 1 )
+			if( PointSet::inTri(v1, v2, v3, curPoint) == 1 )
 			{
 				int idxArr[3]; // Indices to the new triangles
-				triangles.makeTri3(i, v4, &idxArr[0]);
+				triangles.makeTri3(i, curPoint, &idxArr[0]);
+
 				//Flip edges if necessary
-				makeEdgesLD(&idxArr[0], v4);
+				queue<int> adjTri;
+				adjTri.push(idxArr[0]); adjTri.push(idxArr[1]); adjTri.push(idxArr[2]); 
+				makeEdgesLD(adjTri, curPoint);
 				break;
 			}
 		}
@@ -614,25 +617,28 @@ void processCD()
 // Flip all edges in the link of pIdx until they are
 // all LD. pIdx is a vertex of all triangles given
 // by the three indices i idxArr
-void makeEdgesLD(int* idxArr, int pIdx)
+void makeEdgesLD(queue<int>& idxArr, int pIdx)
 {
-	for (int i = 0; i < 3; i++)
+	while(!idxArr.empty())
 	{
+		int curAdjTri = idxArr.front();
+		idxArr.pop();
 		int noTri;
 		int w[3];
-		triangles.getVertexIdx(idxArr[i] << 3, w[0], w[1], w[2]);
+		triangles.getVertexIdx(curAdjTri << 3, w[0], w[1], w[2]);
 
 		int adjTri[6];
-		triangles.adjacentTriangles(idxArr[i], noTri, &adjTri[0]);
+		triangles.adjacentTriangles(curAdjTri, noTri, &adjTri[0]);
 
+		int v[3];
 		// noTri is (probably) never more than 3
 		for (int j = 0; j < noTri; j++)
 		{
-			if (adjTri[j] == idxArr[0] || adjTri[j] == idxArr[1] || adjTri[j] == idxArr[2])
-				continue; // consider only triangles that do not have pIdx as a vertex
-
-			int v[3];
 			triangles.getVertexIdx(adjTri[j] << 3, v[0], v[1], v[2]);
+
+			if (v[0] == pIdx || v[1] == pIdx || v[2] == pIdx)
+				continue;  // consider only triangles that do not have pIdx as a vertex
+			
 			if ( PointSet::inCircle(v[0], v[1], v[2], pIdx) == 1)
 			{
 				int connectToP;
@@ -663,11 +669,11 @@ void makeEdgesLD(int* idxArr, int pIdx)
 				}
 				// Remove the old triangles
 				triangles.delTri(adjTri[j] << 3);
-				triangles.delTri(idxArr[i] << 3);
+				triangles.delTri(curAdjTri << 3);
 
 				// Add the new triangles
-				triangles.makeTri(pIdx, v[connectToP], v[(connectToP+1)%3], true);
-				triangles.makeTri(pIdx, v[connectToP], v[(connectToP+2)%3], true);
+				idxArr.push(triangles.makeTri(pIdx, v[connectToP], v[(connectToP+1)%3], true));
+				idxArr.push(triangles.makeTri(pIdx, v[connectToP], v[(connectToP+2)%3], true));
 			}
 		}
 	}

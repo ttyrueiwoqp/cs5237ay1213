@@ -40,11 +40,11 @@ int Trist::makeTri3(int triIdx, int pIndex1, int* idxArr )
 	idxArr[1] = makeTri(oldTri.vi_[0], oldTri.vi_[2], pIndex1, false);
 	idxArr[2] = makeTri(oldTri.vi_[1], oldTri.vi_[2], pIndex1, false);
 	triangles[triIdx].valid = false;
-
+	
 	for(i=0; i<6; ++i)
 	{
 		OrTri orIdx = oldTri.fnext_[i];
-		if( orIdx >= 0 )
+		if( orIdx >= 0 && triangles[orIdx>>3].valid)
 		{
 			int triIdx = orIdx>>3;
 			int version = orIdx & 0x07;
@@ -57,14 +57,13 @@ int Trist::makeTri3(int triIdx, int pIndex1, int* idxArr )
 			int i_v3 = (i_enext3<3)? tri.vi_[i_enext3]: tri.vi_[ sym(i_enext3) ];		
 			for(j=0; j<3; ++j)
 			{
-				if( i_v1 == triangles[ idxArr[j] ].vi_[0] && i_v2 == triangles[ idxArr[j] ].vi_[1] && i_v3 != triangles[ idxArr[j] ].vi_[2] ){
+				if((triangles[ idxArr[j] ].vi_[0] == i_v1 || triangles[ idxArr[j] ].vi_[0] == i_v2 || triangles[ idxArr[j] ].vi_[0] == i_v3) && (triangles[ idxArr[j] ].vi_[1] == i_v1 || triangles[ idxArr[j] ].vi_[1] == i_v2 || triangles[ idxArr[j] ].vi_[1] == i_v3))  {
 					fmerge( idxArr[j]<<3, triIdx<<3);
 					break;
 				}
 			}
 		}
 	}
-
 	fmerge( idxArr[0]<<3, idxArr[1]<<3);
 	fmerge( idxArr[0]<<3, idxArr[2]<<3);
 	fmerge( idxArr[1]<<3, idxArr[2]<<3);
@@ -90,7 +89,6 @@ void Trist::fmerge(OrTri abc, OrTri abd)
 		int i_v2 = (i_enext2<3)? tri1.vi_[i_enext2]: tri1.vi_[ sym(i_enext2) ];
 		int i_v3 = (i_enext3<3)? tri1.vi_[i_enext3]: tri1.vi_[ sym(i_enext3) ];
 
-		bool bOk = false;
 		for(k=0; k<6; ++k)
 		{
 			int k_enext1 = enext(k);
@@ -104,12 +102,9 @@ void Trist::fmerge(OrTri abc, OrTri abd)
 			{
 				tri1.fnext_[i] = triIdx2<<3 | k;
 				tri2.fnext_[k] = triIdx1<<3 | i;
-				bOk = true;
-				break;
+				return;
 			}
 		}
-		if (bOk)
-			break;
 	}
 }
 
@@ -177,7 +172,7 @@ void Trist::fmerge(TriRecord& tri)
 					if( i_v1 == k_v1 && i_v2 == k_v2 && i_v3 != k_v3 )
 					{
 						tri.fnext_[i] = j<<3 | k;
-						triangles[j].fnext_[k] = (triSz-1)<<3 | i;
+						triangles[j].fnext_[k] = triSz<<3 | i;
 						bOk = true;
 						break;
 					}
