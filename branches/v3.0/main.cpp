@@ -608,9 +608,11 @@ void processCD()
 		aniState.scale = scaleVal;
 		aniState.trivec = triangles.getTriangles();
 
-		triangles.clear();
-		// Add "dummy" big triangle
-		triangles.makeTri(1, 2, 3);
+		if (triangles.noTri() == 0) {
+			triangles.clear();
+			// Add "dummy" big triangle
+			triangles.makeTri(1, 2, 3);
+		}
 		animateCD();
 	}
 }
