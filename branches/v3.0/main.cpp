@@ -73,6 +73,8 @@ void drawPlay(void);
 void drawData(void);
 void drawAPoint(double x,double y);
 void drawALine(double x1,double y1, double x2, double y2);
+void drawALineRed(double x1,double y1, double x2, double y2);
+void drawALineGreen(double x1,double y1, double x2, double y2);
 void drawATriangle(double x1,double y1, double x2, double y2, double x3, double y3, bool randomColor);
 void showText(int x, int y, int z);
 
@@ -666,6 +668,27 @@ void makeEdgesLD(queue<int>& idxArr, int pIdx)
 					aniState.toTri[1][1] = v[connectToP];
 					aniState.toTri[1][2] = v[(connectToP+2)%3];
 					aniState.state = 1;
+
+					LongInt x1, y1, x2, y2;
+					int res1 = points.getPoint(v[(connectToP+1)%3], x1, y1);
+					int res2 = points.getPoint(v[(connectToP+2)%3], x2, y2);
+					if (res1 == 1 && res2 == 1
+						&& !(y1 == INF || y2 == INF) && !(y1 == -INF || y2 == -INF)) {
+						drawALineRed(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
+						glutSwapBuffers();
+						glutPostRedisplay();
+						Sleep(1000);
+					}
+					res1 = points.getPoint(pIdx, x1, y1);
+					res2 = points.getPoint(v[connectToP], x2, y2);
+					if (res1 == 1 && res2 == 1
+						&& !(y1 == INF || y2 == INF) && !(y1 == -INF || y2 == -INF)) {
+						drawALineGreen(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
+						glutSwapBuffers();
+						glutPostRedisplay();
+						Sleep(1000);
+					}
+
 				}
 				// Remove the old triangles
 				triangles.delTri(adjTri[j] << 3);
@@ -743,6 +766,48 @@ void drawALine(double x1,double y1, double x2, double y2)
 	glVertex2d(x2,y2);
 	glEnd();
 	glPointSize(1);
+}
+
+void drawALineRed(double x1,double y1, double x2, double y2)
+{
+	glPointSize(1);
+	glBegin(GL_LINE_LOOP);
+	glColor3f(1.0,0,0);
+#if T2C
+	x1 *= scaleVal;
+	y1 *= scaleVal;
+	x2 *= scaleVal;
+	y2 *= scaleVal;
+
+	x1 += HalfWinWidth;
+	y1 += HalfWinHeight;
+	x2 += HalfWinWidth;
+	y2 += HalfWinHeight;
+#endif
+	glVertex2d(x1,y1);
+	glVertex2d(x2,y2);
+	glEnd();
+}
+
+void drawALineGreen(double x1,double y1, double x2, double y2)
+{
+	glPointSize(1);
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0,1.0,0);
+#if T2C
+	x1 *= scaleVal;
+	y1 *= scaleVal;
+	x2 *= scaleVal;
+	y2 *= scaleVal;
+
+	x1 += HalfWinWidth;
+	y1 += HalfWinHeight;
+	x2 += HalfWinWidth;
+	y2 += HalfWinHeight;
+#endif
+	glVertex2d(x1,y1);
+	glVertex2d(x2,y2);
+	glEnd();
 }
 
 void drawATriangle(double x1,double y1, double x2, double y2, double x3, double y3, bool randomColor)
