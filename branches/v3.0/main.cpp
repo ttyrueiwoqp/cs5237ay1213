@@ -239,7 +239,7 @@ void drawTrist()
 			drawAPoint(x.doubleValue(), y.doubleValue());
 	}
 	glPopMatrix();
-	glutSwapBuffers();
+	//glutSwapBuffers();
 }
 
 void setupDataStructures()
