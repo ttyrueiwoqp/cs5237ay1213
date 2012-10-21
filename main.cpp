@@ -120,7 +120,6 @@ void resizeData(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(-width/2, width, -height/2, height, -100, 1000.0);
-	printf("resizeData\n");
 }
 
 // set and redraw all the subWindows
@@ -608,11 +607,11 @@ void processCD()
 		aniState.scale = scaleVal;
 		aniState.trivec = triangles.getTriangles();
 
-		if (triangles.noTri() == 0) {
+		//if (triangles.noTri() == 0) {
 			triangles.clear();
 			// Add "dummy" big triangle
 			triangles.makeTri(1, 2, 3);
-		}
+		//}
 		animateCD();
 	}
 }
@@ -678,6 +677,7 @@ void makeEdgesLD(queue<int>& idxArr, int pIdx)
 						&& !(y1 == INF || y2 == INF) && !(y1 == -INF || y2 == -INF)) {
 						drawALineRed(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
 						glutSwapBuffers();
+						glPopMatrix();
 						glutPostRedisplay();
 						Sleep(1000);
 					}
@@ -687,6 +687,7 @@ void makeEdgesLD(queue<int>& idxArr, int pIdx)
 						&& !(y1 == INF || y2 == INF) && !(y1 == -INF || y2 == -INF)) {
 						drawALineGreen(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue());
 						glutSwapBuffers();
+						glPopMatrix();
 						glutPostRedisplay();
 						Sleep(1000);
 					}
