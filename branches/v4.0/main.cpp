@@ -8,6 +8,8 @@
 #include <string>
 #include <sstream>
 #include <queue>
+#include <search.h>
+#include "VoronoiDiagramGenerator.h"
 #include "GL\glut.h"
 #include "basicsP2\pointSetArray.h"
 #include "basicsP2\Trist.h"
@@ -25,6 +27,11 @@ struct animateState
 	int toTri[2][3];
 	std::vector<TriRecord> trivec;
 	unsigned int startTm, stopTm;
+};
+
+struct line_typ
+{
+	double x1, y1, x2, y2;
 };
 
 #define T2C				1		//Tranform to center
@@ -46,6 +53,9 @@ GLfloat angle = 0, vPos = 0, hPos = 0, zPos = 0;
 int parentWindow, playWindow, topWindow, dataWindow;
 int idleTimer = 1, timerDelay = 10, frameCount = 0, intervalTimerCalls = 0;
 int dataWindowHeight, dataWindowWidth;
+
+typedef std::vector<line_typ> LINE_VEC;
+
 
 // strings for information data display
 const int nMsg = 21, messageLength = 80;
@@ -174,10 +184,53 @@ void drawParent(void)
 	glutSwapBuffers();
 }      
 
+
+LINE_VEC computeVoronoi()
+{
+	int i, pos;
+	LINE_VEC lineVec;
+	float* xValues;
+    float* yValues;
+	const int nSize = points.noPt();
+	xValues = new float[nSize];
+    yValues = new float[nSize];
+	for( i=1, pos=0; i<nSize+1; ++i)
+	{
+		LongInt x1, y1;
+		int res = points.getPoint(i, x1, y1);
+		if (res == 1)
+		{
+			if(y1 < -(INF-1) || y1 > (INF-1))
+				continue;
+			xValues[pos] = static_cast<float>(x1.doubleValue());
+			yValues[pos] = static_cast<float>(y1.doubleValue());
+			pos++;
+		}
+	}
+    VoronoiDiagramGenerator vdg;
+    vdg.generateVoronoi(xValues,yValues,pos, -1000,1000,-1000,1000,3);
+    vdg.resetIterator();
+
+    float x1,y1,x2,y2;
+    while(vdg.getNext(x1,y1,x2,y2))
+    {
+		line_typ lp;
+		lp.x1 = x1;
+		lp.y1 = y1;
+		lp.x2 = x2;
+		lp.y2 = y2;
+		lineVec.push_back(lp);
+    }
+	return lineVec;
+}
+
 void drawTrist() 
 {
 	static int s_counter = 0;
+	LINE_VEC lv = computeVoronoi();
+
 	glPushMatrix();
+
 	if(bAnimate && aniState.state == 1)
 	{
 		LongInt x1, y1, x2, y2, x3, y3;
@@ -238,6 +291,11 @@ void drawTrist()
 			cout << "Error, wrong point index" << endl;
 		else
 			drawAPoint(x.doubleValue(), y.doubleValue());
+	}
+	//Draw Voronoi diagram
+	for(int i=0; i<lv.size(); ++i)
+	{
+		drawALine( lv[i].x1, lv[i].y1, lv[i].x2, lv[i].y2);
 	}
 	glPopMatrix();
 	//glutSwapBuffers();
