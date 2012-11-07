@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Phase II"
 	ProjectGUID="{B9156095-8BB2-4286-912E-B511954787BE}"
 	RootNamespace="lab4"
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;glut-3.6\include&quot;"
+				AdditionalIncludeDirectories="&quot;glut-3.7.6\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,7 +58,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glut32.lib glu32.lib Opengl32.lib "
+				AdditionalDependencies="glutdll\glut32.lib glu32.lib Opengl32.lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -167,12 +167,20 @@
 				RelativePath=".\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\VoronoiDiagramGenerator.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\VoronoiDiagramGenerator.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
