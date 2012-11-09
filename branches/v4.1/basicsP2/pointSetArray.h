@@ -15,6 +15,7 @@ public:
 	void print();										// for debugging only
 	void eraseLastPoint();								// remove the last point when it fail in tri test
 	int checkPointExist(LongInt& x1,LongInt& y1);		// check if the point exist return point idx otherwise -1 
+	void setLastPointWeight(int w);
 };
 
 #endif
