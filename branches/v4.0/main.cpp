@@ -40,6 +40,12 @@ struct line_typ
 PointSetArray points; // The points added by the user.
 Trist triangles; // The current triangles
 
+int weightDefault = 10;	// default weight, pls change accordingly
+int weightDisplay = weightDefault;		
+int weightIncr = 1;	// weight increment, pls change accordingly
+int weightMax = 20;		// max weight
+int weightMin = 1;		// min weight
+
 double windowWidth = 1200;
 double windowHeight = 700;
 double HalfWinWidth	 = (windowWidth/2);
@@ -58,7 +64,7 @@ typedef std::vector<line_typ> LINE_VEC;
 
 
 // strings for information data display
-const int nMsg = 21, messageLength = 80;
+const int nMsg = 60, messageLength = 80;
 char message[nMsg][messageLength];
 double ip_x = 0, ip_y = 0;
 float delay = 10;
@@ -150,20 +156,22 @@ void intervalTimer (int i)
 	// compute frames / second
 	intervalTimerCalls++;
 	if ( (intervalTimerCalls % 10) == 0) { 
-		sprintf(message[11],"IP[x,y]: %d, %d", (int)ip_x, (int)ip_y);
-		sprintf(message[12],"DY[in msec]: %d", (int)delay);
-		sprintf(message[13],"Zoom[%%]: %d %%", (int)((scaleVal/1.0)*100));
-		sprintf(message[14],"CD[On|Off]: %s", bCompDel? "On": "Off");
-		sprintf(message[15],"Animation[On|Off]: %s", bAnimate? "On": "Off");
-		sprintf(message[16],"Computation Time[in msec]: %d", compCDTime);
-		sprintf(message[19],"From: Point[a,b,c] and Point[a,b,d]");
-		sprintf(message[20],"To: Point[b,c,d] and Point[a,c,d]");
-		sprintf(message[19],"From: Point[%d,%d,%d] and Point[%d,%d,%d]", aniState.fromTri[0][0], aniState.fromTri[0][1], aniState.fromTri[0][2]
+		sprintf(message[21],"IP[x,y]: %d, %d", (int)ip_x, (int)ip_y);
+		sprintf(message[22],"DY[in msec]: %d", (int)delay);
+		sprintf(message[23],"Zoom[%%]: %d %%", (int)((scaleVal/1.0)*100));
+		sprintf(message[24],"CD[On|Off]: %s", bCompDel? "On": "Off");
+		sprintf(message[25],"Animation[On|Off]: %s", bAnimate? "On": "Off");
+		sprintf(message[26],"Computation Time[in msec]: %d", compCDTime);
+
+		sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
+		sprintf(message[42],"To: Point[b,c,d] and Point[a,c,d]");
+		sprintf(message[41],"From: Point[%d,%d,%d] and Point[%d,%d,%d]", aniState.fromTri[0][0], aniState.fromTri[0][1], aniState.fromTri[0][2]
 																		, aniState.fromTri[1][0], aniState.fromTri[1][1], aniState.fromTri[1][2]);
-		sprintf(message[20],"To: Point[%d,%d,%d] and Point[%d,%d,%d]",aniState.toTri[0][0], aniState.toTri[0][1], aniState.toTri[0][2]
+		sprintf(message[42],"To: Point[%d,%d,%d] and Point[%d,%d,%d]",aniState.toTri[0][0], aniState.toTri[0][1], aniState.toTri[0][2]
 																	,aniState.toTri[1][0], aniState.toTri[1][1], aniState.toTri[1][2]);
+		sprintf(message[43],"Last point Weight [%d~%d]: %d ", weightMin, weightMax, weightDisplay);
 		glutSetWindow(dataWindow);
-		glutPostRedisplay(); 
+		glutPostRedisplay();
 	}
 
 	const int delayDYCnt = (int)(delay / timerDelay);
@@ -442,6 +450,23 @@ case '-':
 case '.':
 	scaleVal = (float)1.0;
 	break;
+
+case 'm':
+case 'M':
+	if (weightDisplay < weightMax) {
+		weightDisplay += weightIncr;
+		points.setLastPointWeight(weightDisplay);
+	}
+	break;
+
+case 'n':
+case 'N':
+	if (weightDisplay > weightMin) {
+		weightDisplay -= weightIncr;
+		points.setLastPointWeight(weightDisplay);
+	}
+	break;
+
 default:
 	break;
 	}
@@ -543,18 +568,23 @@ void initTextList()
 	sprintf(message[6],"W|w: Write control points to \"savefile.txt\"");
 	sprintf(message[7],"+|-: Zoom In | Zoom Out");
 	sprintf(message[8],"A|a: Animation On or Off");
-	sprintf(message[9],"                                                   ");
-	sprintf(message[10],"[Command]-----------------------------------------");
-	sprintf(message[11],"IP[x,y]: 0, 0");
-	sprintf(message[12],"DY[in sec]: 0");
-	sprintf(message[13],"Zoom[%%]: 100%%");
-	sprintf(message[14],"CD[On|Off]: Off");
-	sprintf(message[15],"Animation[On|Off]: Off");
-	sprintf(message[16],"Computation Time[in msec]: 0");
-	sprintf(message[17],"                                                   ");
-	sprintf(message[18],"[Working]-----------------------------------------");
-	sprintf(message[19],"From: Point[a,b,c] and Point[a,b,d]");
-	sprintf(message[20],"To: Point[b,c,d] and Point[a,c,d]");
+	sprintf(message[9],"M|m: Increase last point weight");
+	sprintf(message[10],"N|n: Decrease last point weight");
+	sprintf(message[11],"                                                   ");
+	// Amend the number showText() if you want to add msg here
+	sprintf(message[20],"[Command]-----------------------------------------");
+	sprintf(message[21],"IP[x,y]: 0, 0");
+	sprintf(message[22],"DY[in sec]: 0");
+	sprintf(message[23],"Zoom[%%]: 100%%");
+	sprintf(message[24],"CD[On|Off]: Off");
+	sprintf(message[25],"Animation[On|Off]: Off");
+	sprintf(message[26],"Computation Time[in msec]: 0");
+	sprintf(message[27],"                                                   ");
+	// Amend the number showText() if you want to add msg here
+	sprintf(message[40],"[Working]-----------------------------------------");
+	sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
+	sprintf(message[42],"To: Point[b,c,d] and Point[a,c,d]");
+	sprintf(message[43],"Last point Weight [%d~%d]: 10", weightMin, weightMax);
 }
 // initialize a window 
 void initWindow(float r, float g, float b, float a) 
@@ -580,9 +610,10 @@ void processIP(LongInt x, LongInt y)
 {
 	int ptIdx = points.checkPointExist(x, y);
 	if( ptIdx < 1 ) // only add the point if it does not exist already
-		int PtSz = points.addPoint(x, y); // add the point to the list of points
+		int PtSz = points.addPoint(x, y, weightDefault); // add the point to the list of points
 	ip_x = x.doubleValue();
 	ip_y = y.doubleValue();
+	weightDisplay = weightDefault;
 }
 
 void buildTriangulation(int curPoint)
@@ -931,8 +962,14 @@ void showText(int x, int y, int z)
 				glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *cstr++);
 				glColor3f(1.0f,1.0f,1.0f); 
 				break;
-			case 9:
-			case 17:
+			case 11:	// amend if new msg is added
+				i = 19;
+				break;
+			case 27:	// amend if new msg is added
+				i = 39;
+				break;
+			case 19:
+			case 39:
 				glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cstr++);
 				glColor3f(1.0f,1.0f,1.0f);
 				break;

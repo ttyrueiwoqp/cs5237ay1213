@@ -5,18 +5,30 @@ using namespace std;
 
 vector<LongInt> points_x;
 vector<LongInt> points_y;
+vector<int> weight;
 
 PointSet::PointSet()
 {
 	// Reset coordinate vectors
 	points_x.clear();
 	points_y.clear();
+	weight.clear();
 }
 
 int PointSet::addPoint(LongInt x1, LongInt y1)
 {
 	points_x.push_back(x1);
 	points_y.push_back(y1);
+
+	// Return number of points stored (== index to the added point)
+	return points_x.size();
+}
+
+int PointSet::addPoint(LongInt x1, LongInt y1, int w1)
+{
+	points_x.push_back(x1);
+	points_y.push_back(y1);
+	weight.push_back(w1);
 
 	// Return number of points stored (== index to the added point)
 	return points_x.size();
