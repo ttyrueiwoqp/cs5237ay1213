@@ -40,11 +40,12 @@ struct line_typ
 PointSetArray points; // The points added by the user.
 Trist triangles; // The current triangles
 
-int weightDefault = 10;	// default weight, pls change accordingly
+int weightDefault = 10000;	// default weight, pls change accordingly
 int weightDisplay = weightDefault;		
-int weightIncr = 1;	// weight increment, pls change accordingly
-int weightMax = 20;		// max weight
+int weightIncr = 1000;	// weight increment, pls change accordingly
+int weightMax = 50000;		// max weight
 int weightMin = 1;		// min weight
+bool useWeights = false; // toggle between weighted and unweighted DT
 
 double windowWidth = 1200;
 double windowHeight = 700;
@@ -161,7 +162,8 @@ void intervalTimer (int i)
 		sprintf(message[23],"Zoom[%%]: %d %%", (int)((scaleVal/1.0)*100));
 		sprintf(message[24],"CD[On|Off]: %s", bCompDel? "On": "Off");
 		sprintf(message[25],"Animation[On|Off]: %s", bAnimate? "On": "Off");
-		sprintf(message[26],"Computation Time[in msec]: %d", compCDTime);
+		sprintf(message[26],"Weighted triangulation[On|Off]: %s", useWeights? "On" : "Off");
+		sprintf(message[27],"Computation Time[in msec]: %d", compCDTime);
 
 		sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
 		sprintf(message[42],"To: Point[b,c,d] and Point[a,c,d]");
@@ -311,13 +313,13 @@ void drawTrist()
 
 void setupDataStructures()
 {
-	triangles.clear();
+	triangles.clearAllTriangles();
 	points.eraseAllPoints();
 
 	// Setup points for big enclosing triangle
-	int v1 = points.addPoint(LongInt(-INF), LongInt(INF));
-	int v2 = points.addPoint(LongInt(INF), LongInt(INF));
-	int v3 = points.addPoint(LongInt(0), LongInt(-INF));
+	int v1 = points.addPoint(LongInt(-INF), LongInt(INF), weightDefault);
+	int v2 = points.addPoint(LongInt(INF), LongInt(INF), weightDefault);
+	int v3 = points.addPoint(LongInt(0), LongInt(-INF), weightDefault);
 }
 
 void readFile(){
@@ -467,7 +469,13 @@ case 'N':
 	}
 	break;
 
+case 't':
+case 'T':
+	useWeights = !useWeights;
+	break;
+
 default:
+	cerr << "Unknown command: " << key << endl;
 	break;
 	}
 	glutPostRedisplay();
@@ -502,12 +510,18 @@ void mouse(int button, int state, int x, int y)
 int main(int  argc, char *argv[])  
 {
 	cout << "CS5237 Phase III"<< endl<< endl;
+	cout << "See main window for instructions" << endl;
+	cout << "Press Q to quit" << endl;
+
+	/*
 	cout << "Right mouse click: Insert point"<<endl;
 	cout << "R: Read in control points from \"input.txt\"" <<endl;
 	cout << "C: Compute Delaunay triangulation" << endl;
 	cout << "E: Erase all points" << endl;
 	cout << "W: Write control points to \"savefile.txt\"" <<endl;
 	cout << "Q: Quit" <<endl;
+	*/
+
 	setupDataStructures();
 
 	glutInit(&argc, argv);
@@ -570,7 +584,8 @@ void initTextList()
 	sprintf(message[8],"A|a: Animation On or Off");
 	sprintf(message[9],"M|m: Increase last point weight");
 	sprintf(message[10],"N|n: Decrease last point weight");
-	sprintf(message[11],"                                                   ");
+	sprintf(message[11],"T|t: Toggle weighted/unweighted DT");
+	sprintf(message[12],"                                                        ");
 	// Amend the number showText() if you want to add msg here
 	sprintf(message[20],"[Command]-----------------------------------------");
 	sprintf(message[21],"IP[x,y]: 0, 0");
@@ -578,8 +593,9 @@ void initTextList()
 	sprintf(message[23],"Zoom[%%]: 100%%");
 	sprintf(message[24],"CD[On|Off]: Off");
 	sprintf(message[25],"Animation[On|Off]: Off");
-	sprintf(message[26],"Computation Time[in msec]: 0");
-	sprintf(message[27],"                                                   ");
+	sprintf(message[26],"Weighted triangulation[On|Off]: Off");
+	sprintf(message[27],"Computation Time[in msec]: 0");
+	sprintf(message[28],"                                                   ");
 	// Amend the number showText() if you want to add msg here
 	sprintf(message[40],"[Working]-----------------------------------------");
 	sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
@@ -674,7 +690,7 @@ void processCD()
 
 	if( !bAnimate )
 	{
-		triangles.clear();
+		triangles.clearAllTriangles();
 		// Add "dummy" big triangle
 		triangles.makeTri(1, 2, 3);
 		for (int j = 4; j <= points.noPt(); j++)
@@ -697,7 +713,7 @@ void processCD()
 		aniState.trivec = triangles.getTriangles();
 
 		if (triangles.noTri() == 0) {
-			triangles.clear();
+			triangles.clearAllTriangles();
 			// Add "dummy" big triangle
 			triangles.makeTri(1, 2, 3);
 		}
@@ -731,7 +747,7 @@ void makeEdgesLD(queue<int>& idxArr, int pIdx)
 			if (v[0] == pIdx || v[1] == pIdx || v[2] == pIdx)
 				continue;  // consider only triangles that do not have pIdx as a vertex
 			
-			if ( PointSet::inCircle(v[0], v[1], v[2], pIdx) == 1)
+			if ( PointSet::inCircle(v[0], v[1], v[2], pIdx, useWeights) == 1)
 			{
 				int connectToP;
 				// One vertex of v is not a vertex of w

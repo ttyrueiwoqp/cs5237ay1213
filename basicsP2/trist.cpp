@@ -15,7 +15,7 @@ Trist::Trist()
 	en_[3] = 5;
 	en_[4] = 3;
 	en_[5] = 4;
-	clear();
+	//clearAllTriangles();
 }
 
 // return the number of triangles
@@ -24,7 +24,7 @@ int Trist::noTri()
 	return triangles.size();
 }
 
-void Trist::clear()
+void Trist::clearAllTriangles()
 {
 	triangles.clear();
 }
