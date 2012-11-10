@@ -65,7 +65,7 @@ class Trist {
 		OrTri enext(OrTri ef);
 		OrTri sym(OrTri ef);
 
-		void clear();
+		void clearAllTriangles();
 		bool getVertexIdx(OrTri, int& pIdx1,int& pIdx2,int& pIdx3); // return the three indices of the three vertices by OrTri
 
 		int org(OrTri);  // the index of the first vertex of OrTri, e.g. org(bcd) => b

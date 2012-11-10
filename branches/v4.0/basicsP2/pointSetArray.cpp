@@ -29,6 +29,7 @@ void PointSetArray::eraseAllPoints()
 {
 	points_x.clear();
 	points_y.clear();
+	weight.clear();
 }
 
 void PointSetArray::print()

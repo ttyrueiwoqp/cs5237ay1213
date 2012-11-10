@@ -10,18 +10,9 @@ vector<int> weight;
 PointSet::PointSet()
 {
 	// Reset coordinate vectors
-	points_x.clear();
-	points_y.clear();
-	weight.clear();
-}
-
-int PointSet::addPoint(LongInt x1, LongInt y1)
-{
-	points_x.push_back(x1);
-	points_y.push_back(y1);
-
-	// Return number of points stored (== index to the added point)
-	return points_x.size();
+//	points_x.clear();
+//	points_y.clear();
+//	weight.clear();
 }
 
 int PointSet::addPoint(LongInt x1, LongInt y1, int w1)
@@ -105,8 +96,10 @@ returns:
 1 if pIdx lies in counterclockwise orientation of p1, p2, p3,
 -1 if pIdx lies in clockwise orientation of p1, p2, p3,
 0 if on the circle
+useWeights indicates wheter the the point weights should be taken into account
 **************************/
-int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx) {
+int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx, bool useWeights) 
+{
 
 	LongInt a = points_x[p1Idx] - points_x[pIdx];
 	LongInt b = points_y[p1Idx] - points_y[pIdx];
@@ -117,6 +110,13 @@ int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx) {
 	LongInt g = points_x[p3Idx] - points_x[pIdx];
 	LongInt h = points_y[p3Idx] - points_y[pIdx];
 	LongInt i = g * g + h * h;
+
+	if (useWeights)
+	{
+		c = c - weight[p1Idx];
+		f = f - weight[p2Idx];
+		i = i - weight[p3Idx];
+	}
 
 	return det3x3(a, b, c, d, e, f, g, h, i).sign();
 }
@@ -140,7 +140,7 @@ int inCircleTest2Pt(int p1Idx, int p2Idx, int pIdx) {
 		return -1;
 }
 
-int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
+int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx, bool useWeights)
 {
 	// Decrement by one because of vector indexing
 	p1Idx--; p2Idx--; p3Idx--; pIdx--;
@@ -151,7 +151,8 @@ int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 	
 	// collinear, return 1 if 3 pts are the same, -1 if all different
 	// if 2 pts are the same, check whether the pt lies in the circle formed by 2 different pts
-	if (orient == 0) {
+	if (orient == 0)
+	{
 		// Check whether pts are the same
 		bool a = ((points_x[p2Idx] == points_x[p3Idx]) && (points_y[p2Idx] == points_y[p3Idx]));
 		bool b = ((points_x[p1Idx] == points_x[p3Idx]) && (points_y[p1Idx] == points_y[p3Idx]));
@@ -169,7 +170,7 @@ int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 			return -1;	// collinear
 	}
 
-	int isInCircle = inCircleTest(p1Idx, p2Idx, p3Idx, pIdx);
+	int isInCircle = inCircleTest(p1Idx, p2Idx, p3Idx, pIdx, useWeights);
 
 	if (isInCircle == 0)
 		return 0;
@@ -178,35 +179,3 @@ int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
 	else
 		return -1;
 }
-
-
-//LongInt det4x4(LongInt a, LongInt b, LongInt c, LongInt d,
-//		       LongInt e, LongInt f, LongInt g, LongInt h,
-//		       LongInt i, LongInt j, LongInt k, LongInt l,
-//		       LongInt m, LongInt n, LongInt o, LongInt p){
-//
-//   return a*det3x3(f,g,h,
-//				   j,k,l,
-//				   n,o,p)
-//	    - b*det3x3(e,g,h,
-//				   i,k,l,
-//				   m,o,p)
-//	    + c*det3x3(e,f,h,
-//				   i,j,l,
-//				   m,n,p)
-//		- d*det3x3(e,f,g,
-//				   i,j,k,
-//				   m,n,o);
-//}
-
-//int PointSet::inCircle(int p1Idx, int p2Idx, int p3Idx, int pIdx)
-//{
-//	return (det4x4(points_x[p1Idx], points_y[p1Idx], points_x[p1Idx]*points_x[p1Idx] + points_y[p1Idx]*points_y[p1Idx], 1,
-//				  points_x[p2Idx], points_y[p2Idx], points_x[p2Idx]*points_x[p2Idx] + points_y[p2Idx]*points_y[p2Idx], 1,
-//				  points_x[p3Idx], points_y[p3Idx], points_x[p3Idx]*points_x[p3Idx] + points_y[p3Idx]*points_y[p3Idx], 1,
-//				  points_x[pIdx],  points_y[pIdx],  points_x[pIdx]*points_x[pIdx]   + points_y[pIdx]*points_y[pIdx],   1)
-//		 * det3x3(points_x[p1Idx], points_y[p1Idx], 1,
-//				  points_x[p2Idx], points_y[p2Idx], 1,
-//				  points_x[p3Idx], points_y[p3Idx], 1))
-//				  > -1;
-//}
