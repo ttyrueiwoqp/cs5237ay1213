@@ -66,3 +66,8 @@ int PointSetArray::checkPointExist(LongInt& x,LongInt& y)
 	}
 	return -1;
 }
+
+void PointSetArray::setLastPointWeight(int w)
+{
+	weight.back() = w;
+}
