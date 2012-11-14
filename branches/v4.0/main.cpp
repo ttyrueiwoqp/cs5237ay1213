@@ -89,11 +89,12 @@ void initWindow(float r, float g, float b, float a);
 void drawPlay(void);
 void drawData(void);
 void drawAPoint(double x,double y);
-void drawALine(double x1,double y1, double x2, double y2);
+void drawALine(double x1,double y1, double x2, double y2, float R = 1.0, float G = 1.0, float B = 1.0);
 void drawALineRed(double x1,double y1, double x2, double y2);
 void drawALineGreen(double x1,double y1, double x2, double y2);
 void drawATriangle(double x1,double y1, double x2, double y2, double x3, double y3, bool randomColor);
 void showText(int x, int y, int z);
+void drawACircle(double x1,double y1, double r, float R = 1.0, float G = 1.0, float B = 1.0);
 
 
 // callback, responds to window resize events
@@ -296,16 +297,34 @@ void drawTrist()
 	for (int i = 1; i <= points.noPt(); i++)
 	{
 		LongInt x, y;
-		int res = points.getPoint(i, x, y);
+		int weight = weightDefault;
+		int res = points.getPoint(i, x, y, weight);
 		if (res != 1)
 			cout << "Error, wrong point index" << endl;
 		else
+		{
 			drawAPoint(x.doubleValue(), y.doubleValue());
+			if(useWeights)
+			{
+				float r, g, weightRange = weightMax - weightMin;
+				if(weight-weightMin>weightRange/2)
+				{
+					r = 1;
+					g = 2.0 - float(weight-weightMin)/(weightRange/2);
+				}
+				else
+				{
+					r = float(weight-weightMin)/(weightRange/2);
+					g = 1;
+				}
+				drawACircle(x.doubleValue(), y.doubleValue(), sqrt(float(weight)), r,g,0);
+			}
+		}
 	}
 	//Draw Voronoi diagram
 	for(int i=0; i<lv.size(); ++i)
 	{
-		drawALine( lv[i].x1, lv[i].y1, lv[i].x2, lv[i].y2);
+		drawALine( lv[i].x1, lv[i].y1, lv[i].x2, lv[i].y2, 0,0,1);
 	}
 	glPopMatrix();
 	//glutSwapBuffers();
@@ -586,7 +605,7 @@ void initTextList()
 	sprintf(message[10],"N|n: Decrease last point weight");
 	sprintf(message[11],"T|t: Toggle weighted/unweighted DT");
 	sprintf(message[12],"                                                        ");
-	// Amend the number in showText() if you want to add msg here
+	// Amend the number showText() if you want to add msg here
 	sprintf(message[20],"[Command]-----------------------------------------");
 	sprintf(message[21],"IP[x,y]: 0, 0");
 	sprintf(message[22],"DY[in sec]: 0");
@@ -596,7 +615,7 @@ void initTextList()
 	sprintf(message[26],"Weighted triangulation[On|Off]: Off");
 	sprintf(message[27],"Computation Time[in msec]: 0");
 	sprintf(message[28],"                                                   ");
-	// Amend the number in showText() if you want to add msg here
+	// Amend the number showText() if you want to add msg here
 	sprintf(message[40],"[Working]-----------------------------------------");
 	sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
 	sprintf(message[42],"To: Point[b,c,d] and Point[a,c,d]");
@@ -854,11 +873,11 @@ void drawAPoint(double x,double y)
 	glPointSize(1);
 }
 
-void drawALine(double x1,double y1, double x2, double y2)
+void drawALine(double x1, double y1, double x2, double y2, float R, float G, float B)
 {
 	glPointSize(1);
 	glBegin(GL_LINE_LOOP);
-	glColor3f(1,1,1);
+	glColor3f(R,G,B);
 #if T2C
 	x1 *= scaleVal;
 	y1 *= scaleVal;
@@ -978,10 +997,10 @@ void showText(int x, int y, int z)
 				glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *cstr++);
 				glColor3f(1.0f,1.0f,1.0f); 
 				break;
-			case 12:	// amend if new msg is added
+			case 11:	// amend if new msg is added
 				i = 19;
 				break;
-			case 28:	// amend if new msg is added
+			case 27:	// amend if new msg is added
 				i = 39;
 				break;
 			case 19:
@@ -997,4 +1016,28 @@ void showText(int x, int y, int z)
 		}
 	}
 	glEnable(GL_LIGHTING);
+}
+
+void drawACircle(double x1,double y1, double r, float R, float G, float B)
+{
+	cout << R << " " << G << " " << B << endl;
+	const float DEG2RAD = 3.14159/180;
+   
+	glBegin(GL_LINE_LOOP);
+	glColor3f(R,G,B);
+#if T2C
+	x1 *= scaleVal;
+	y1 *= scaleVal;
+	
+	x1 += HalfWinWidth;
+	y1 += HalfWinHeight;
+#endif
+ 
+   for (int i=0; i<360; i++)
+   {
+      float degInRad = i*DEG2RAD;
+      glVertex2f(x1 + cos(degInRad)*r, y1 + sin(degInRad)*r);
+   }
+ 
+   glEnd();
 }

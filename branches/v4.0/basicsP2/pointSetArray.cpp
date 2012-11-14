@@ -18,6 +18,19 @@ int PointSetArray::getPoint (int pIndex, LongInt& x1,LongInt& y1)
 	return 1;
 }
 
+int PointSetArray::getPoint (int pIndex, LongInt& x1,LongInt& y1, int& w)
+{
+	// Decrement by one because of vector indexing
+	pIndex--;
+
+	if (pIndex < 0 || pIndex >= (int)points_x.size())
+		return 0; // points does not exist
+	x1 = points_x[pIndex];
+	y1 = points_y[pIndex];
+	w = weight[pIndex];
+	return 1;
+}
+
 // return the number of points
 int PointSetArray::noPt()
 {
