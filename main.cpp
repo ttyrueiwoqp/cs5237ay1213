@@ -44,7 +44,7 @@ int weightDefault = 10000;	// default weight, pls change accordingly
 int weightDisplay = weightDefault;		
 int weightIncr = 1000;	// weight increment, pls change accordingly
 int weightMax = 50000;		// max weight
-int weightMin = 1;		// min weight
+int weightMin = 1000;		// min weight
 bool useWeights = false; // toggle between weighted and unweighted DT
 
 double windowWidth = 1200;
