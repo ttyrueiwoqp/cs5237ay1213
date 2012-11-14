@@ -605,7 +605,7 @@ void initTextList()
 	sprintf(message[10],"N|n: Decrease last point weight");
 	sprintf(message[11],"T|t: Toggle weighted/unweighted DT");
 	sprintf(message[12],"                                                        ");
-	// Amend the number showText() if you want to add msg here
+	// Amend the number in showText() if you want to add msg here
 	sprintf(message[20],"[Command]-----------------------------------------");
 	sprintf(message[21],"IP[x,y]: 0, 0");
 	sprintf(message[22],"DY[in sec]: 0");
@@ -615,7 +615,7 @@ void initTextList()
 	sprintf(message[26],"Weighted triangulation[On|Off]: Off");
 	sprintf(message[27],"Computation Time[in msec]: 0");
 	sprintf(message[28],"                                                   ");
-	// Amend the number showText() if you want to add msg here
+	// Amend the number in showText() if you want to add msg here
 	sprintf(message[40],"[Working]-----------------------------------------");
 	sprintf(message[41],"From: Point[a,b,c] and Point[a,b,d]");
 	sprintf(message[42],"To: Point[b,c,d] and Point[a,c,d]");
@@ -997,10 +997,10 @@ void showText(int x, int y, int z)
 				glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *cstr++);
 				glColor3f(1.0f,1.0f,1.0f); 
 				break;
-			case 11:	// amend if new msg is added
+			case 12:	// amend if new msg is added
 				i = 19;
 				break;
-			case 27:	// amend if new msg is added
+			case 28:	// amend if new msg is added
 				i = 39;
 				break;
 			case 19:
