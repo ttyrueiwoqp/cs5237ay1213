@@ -35,7 +35,7 @@ struct line_typ
 };
 
 #define T2C				1		//Tranform to center
-#define INF 10000000
+#define INF 100000
 
 PointSetArray points; // The points added by the user.
 Trist triangles; // The current triangles
@@ -321,10 +321,13 @@ void drawTrist()
 			}
 		}
 	}
-	//Draw Voronoi diagram
-	for(int i=0; i<lv.size(); ++i)
+	//Draw Voronoi diagram if we are not in the weighted case
+	if (!useWeights)
 	{
-		drawALine( lv[i].x1, lv[i].y1, lv[i].x2, lv[i].y2, 0,0,1);
+		for(int i=0; i<lv.size(); ++i)
+		{
+			drawALine( lv[i].x1, lv[i].y1, lv[i].x2, lv[i].y2, 0,0,1);
+		}
 	}
 	glPopMatrix();
 	//glutSwapBuffers();
@@ -412,6 +415,11 @@ void writeFile()
 
 	LongInt x, y;
 	int res = points.getPoint(i, x, y);
+
+	// check for "dummy points"
+	if (x.toString().length() > 5 || y.toString().length() > 5)
+		continue;
+
 	if (res != 1)
 		cout << "Error, wrong point index" << endl;
 	else
@@ -773,11 +781,6 @@ void makeEdgesLD(queue<int>& idxArr, int pIdx)
 				for (int k = 0; k < 3; k++)
 					if (v[k] != w[0] && v[k] != w[1] && v[k] != w[2])
 						connectToP = k;
-
-				// The edge between v[(conncetToP+1)%3] && v[(conncetToP+2)%3]
-				// should be flipped to the edge between pIdx and v[connectToP]
-				// WE WANT THIS TO BE ANIMATED!
-
 				if(bAnimate)
 				{
 					aniState.fromTri[0][0] = v[0];
@@ -1020,7 +1023,6 @@ void showText(int x, int y, int z)
 
 void drawACircle(double x1,double y1, double r, float R, float G, float B)
 {
-	cout << R << " " << G << " " << B << endl;
 	const float DEG2RAD = 3.14159/180;
    
 	glBegin(GL_LINE_LOOP);

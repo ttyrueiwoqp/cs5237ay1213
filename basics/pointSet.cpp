@@ -101,7 +101,7 @@ useWeights indicates wheter the the point weights should be taken into account
 int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx, bool useWeights) 
 {
 
-	LongInt a = points_x[p1Idx] - points_x[pIdx];
+	/*LongInt a = points_x[p1Idx] - points_x[pIdx];
 	LongInt b = points_y[p1Idx] - points_y[pIdx];
 	LongInt c = a * a + b * b;
 	LongInt d = points_x[p2Idx] - points_x[pIdx];
@@ -113,12 +113,47 @@ int inCircleTest(int p1Idx, int p2Idx, int p3Idx, int pIdx, bool useWeights)
 
 	if (useWeights)
 	{
-		c = c - weight[p1Idx];
-		f = f - weight[p2Idx];
-		i = i - weight[p3Idx];
+		std::cout << c.toString() << " " << f.toString() << " " << i.toString() << endl;
+		c = c - LongInt(weight[p1Idx]);
+		f = f - LongInt(weight[p2Idx]);
+		i = i - LongInt(weight[p3Idx]);
+		std::cout << c.toString() << " " << f.toString() << " " << i.toString() << endl; 
+	}
+	cout << endl;
+
+	return det3x3(a, b, c, d, e, f, g, h, i).sign();*/
+
+	LongInt a = points_x[p1Idx];
+	LongInt b = points_y[p1Idx];
+	LongInt c = a * a + b* b;
+	LongInt d = LongInt(1);
+	LongInt e = points_x[p2Idx];
+	LongInt f = points_y[p2Idx];
+	LongInt g = e * e + f* f;
+	LongInt h = LongInt(1);
+	LongInt i = points_x[p3Idx];
+	LongInt j = points_y[p3Idx];
+	LongInt k = i * i + j* j;
+	LongInt l = LongInt(1);
+	LongInt m = points_x[pIdx];
+	LongInt n = points_y[pIdx];
+	LongInt o = m * m + n * n;
+	LongInt p = LongInt(1);
+
+	if (useWeights)
+	{
+		c = c - LongInt(weight[p1Idx]);
+		g = g - LongInt(weight[p2Idx]);
+		k = k - LongInt(weight[p3Idx]);
+		o = o - LongInt(weight[pIdx]);
 	}
 
-	return det3x3(a, b, c, d, e, f, g, h, i).sign();
+	LongInt det4 = a * det3x3(f, g, h, j, k, l, n, o, p) -
+		e * det3x3(b, c, d, j, k, l, n, o, p) +
+		i * det3x3(b, c, d, f, g, h, n, o, p) -
+		m * det3x3(b, c, d, f, g, h, j, k, l);
+
+	return det4.sign();
 }
 
 // check whether the pt lies in the circle formed by 2 pts
