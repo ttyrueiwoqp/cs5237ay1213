@@ -536,7 +536,7 @@ void mouse(int button, int state, int x, int y)
 
 int main(int  argc, char *argv[])  
 {
-	cout << "CS5237 Phase III"<< endl<< endl;
+	cout << "CS5237 Phase IV"<< endl<< endl;
 	cout << "See main window for instructions" << endl;
 	cout << "Press Q to quit" << endl;
 
@@ -600,7 +600,7 @@ void initTextList()
 		glEndList(); 
 	}
 	glListBase(base);  // set list base
-	sprintf(message[0],"CS5237 Phase III");
+	sprintf(message[0],"CS5237 Phase IV");
 	sprintf(message[1],"[Information]------------------------------------------");
 	sprintf(message[2],"Right mouse click: Insert point");
 	sprintf(message[3],"R|r: Read in control points from \"input.txt\"");
